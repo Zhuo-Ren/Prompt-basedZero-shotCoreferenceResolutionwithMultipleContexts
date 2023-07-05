@@ -23,7 +23,11 @@ Then you can start the conda env with:
 conda activate corefGPT
 ```
 
-To start easily, you can download our processed ECB+ files from [here](https://drive.google.com/file/d/1jQB8lmtfbgN0rWCyeKBfRn81gCCfTcxT/view?usp=sharing) and place them in the root of this directory. Moreover, to experiment with the Streamlining model, you can download our trained model from [here](https://drive.google.com/file/d/1UW9qpKl6gQD8ysvke-lUNMcd-HjhTfr6/view?usp=sharing) and place that locally under Models/Streamline.
+To start easily, you can download our processed ECB+ files from [here](https://drive.google.com/file/d/1jQB8lmtfbgN0rWCyeKBfRn81gCCfTcxT/view?usp=sharing) and place them in the root of this directory(我已经下来好并放到指定位置了，文件夹叫HOME/Data，但没有add到git). 
+
+Moreover, to experiment with the Streamlining model, you can download our trained model from [here](https://drive.google.com/file/d/1UW9qpKl6gQD8ysvke-lUNMcd-HjhTfr6/view?usp=sharing) and place that locally under Models/Streamline（我已经把压缩包中的models文件夹放到HOME/Models/Streamline下，但没有add到git）.
+
+去Glove官网下载6B 100d的版本（glove.6B.100d.txt），放在HOME/Data/Glove路径下。
 
 ### Setting up the right paths
 

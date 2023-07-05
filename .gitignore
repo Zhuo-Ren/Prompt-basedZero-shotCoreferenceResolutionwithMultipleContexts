@@ -10,3 +10,5 @@ eda/cross-doc-event-coref-master
 # Data and results
 Data/
 Results/
+/Data Preprocessing/.ipynb_checkpoints/
+/Models/Streamline/models/
