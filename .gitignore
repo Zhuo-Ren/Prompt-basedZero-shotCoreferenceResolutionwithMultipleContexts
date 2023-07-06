@@ -8,8 +8,7 @@ eda/cross-doc-event-coref-master
 .env
 
 # Data and results
-Data/
-Results/
+/Data/
+/Results-origin/
 /Data Preprocessing/.ipynb_checkpoints/
 /Models/Streamline/models/
-/Results-origin/
