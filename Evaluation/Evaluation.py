@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 
 # 配置路径
 local_path = "/root/WhatGPTKnowsAboutWhoIsWho-main"
-local_path = "D:/WhatGPTKnowsAboutWhoIsWho-main"
+local_path = "E:/ProgramCode/WhatGPTKnowsAboutWhoIsWho/WhatGPTKnowsAboutWhoIsWho-main"
 root_path = local_path
 input_path = f"{root_path}/Results"  # 读取之前各模型的实验结果
 results_path = f"{root_path}/Results/Charts_and_plots/final_plots"  # 生成图表。所以是放在charts_and_plots文件夹下。
