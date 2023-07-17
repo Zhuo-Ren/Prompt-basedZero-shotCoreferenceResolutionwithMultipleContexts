@@ -61,6 +61,7 @@ labels = [  # 总共可选的labels
     # "GPT2_WSC",
 ]
 
+prompt_num = 7
 
 # ####################################################################
 # Utils for Charts ###################################################
@@ -104,22 +105,22 @@ def process_prediction_results(
     df.label = df.label.apply(lambda x: int(float(x)))
 
     # 添加并计算["prompt_prob n"]列
-    for i in range(1, 6):
+    for i in range(1, 1 + prompt_num):
         df[f"prompt_prob {i}"] = df[f"Prompt {i}"].apply(
             lambda x: get_prob(ast.literal_eval(x)[0], ast.literal_eval(x)[1])
         )
         if reverse:
             df["prompt_prob {}".format(i)] = 1 - df["prompt_prob {}".format(i)]
     # 添加并计算["prompt n"]列
-    for i in range(1, 6):
+    for i in range(1, 1 + prompt_num):
         df[f"prompt {i}"] = df[f"prompt_prob {i}"].apply(
             lambda x: int(x >= threshold)
         )
     # 添加并计算众数列["prompt majority"]列
-    majority_columns = [f"prompt {i}" for i in range(1, 6)]
+    majority_columns = [f"prompt {i}" for i in range(1, 1 + prompt_num)]
     df["prompt majority"] = df[majority_columns].mode(axis=1)[0]
     # 添加并计算均值列["prompt mean"]列
-    avg_columns = [f"prompt_prob {i}" for i in range(1, 6)]
+    avg_columns = [f"prompt_prob {i}" for i in range(1, 1 + prompt_num)]
     df["prompt mean prob"] = df[avg_columns].mean(axis=1)
     df["prompt mean"] = df["prompt mean prob"].apply(
         lambda x: int(x >= threshold)
@@ -170,7 +171,7 @@ def get_metrics_scores(
     """
     groundtruth = df["label"].values
     metrics_of_all_prompt_types = {}
-    prompt_types = ["prompt 1", "prompt 2", "prompt 3", "prompt 4", "prompt 5", "prompt majority", "prompt mean"]
+    prompt_types = ["prompt 1", "prompt 2", "prompt 3", "prompt 4", "prompt 5", "prompt 6", "prompt 7", "prompt majority", "prompt mean"]
     for cur_prompt_type in prompt_types:
         cur_prompt = df[cur_prompt_type].values
         cur_prompt_metrics = {}

@@ -6,12 +6,12 @@
 # pip install datasets
 import warnings
 import json
-from typing import List
+# from typing import List
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from tqdm import tqdm
-import math
+# from tqdm import tqdm
+# import math
 import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import logging, get_linear_schedule_with_warmup, set_seed
@@ -42,7 +42,7 @@ print(device)
 # 配置数据
 """这一部分配置在后边"""
 data_config = "givenDoc"  # "dev"完整的DevSet "firstTwoDocs"只用头两个文档做实现 "givenDoc"只针对给定文档做实现
-given_doc_name = "35_10ecb.xml"  # 当data_config为"a given doc"时，这个变量给出指定文档的名字
+given_doc_name = "21_1ecb.xml"  # 当data_config为"a given doc"时，这个变量给出指定文档的名字
 
 # 配置模型类型
 model_name = "ChatGPT-3.5"  # "ChatGPT-3.5" "GPT2" "ChatGLM-6B"
@@ -62,11 +62,103 @@ answer_choices = ["No", "Yes"]
 
 # 配置模板（模板指的是如何把样例转换为问答的方式，用于基于样例生成prefixes和prompts）
 templates = [
-    "'[TEXT]' In previous sentences, does '[MENTION2]' refer to '[MENTION1]'? Yes or no?",
-    "'[TEXT]' Here, by '[MENTION2]' they mean '[MENTION1]'? Yes or no?",
-    "'[TEXT]' Here, does '[MENTION2]' stand for '[MENTION1]'? Yes or no? ",
-    "'[TEXT]' In the passage above, can '[MENTION2]' be replaced by '[MENTION1]'? Yes or no?",
-    "'[TEXT]' I think '[MENTION2]' means '[MENTION1]'. Yes or no?"
+#     "'[TEXT]' In previous sentences, does '[MENTION2]' refer to '[MENTION1]'? Yes or no?",
+
+#     "'[TEXT]' Here, by '[MENTION2]' they mean '[MENTION1]'? Yes or no?",
+
+#     "'[TEXT]' Here, does '[MENTION2]' stand for '[MENTION1]'? Yes or no? ",
+
+#     "'[TEXT]' In the passage above, can '[MENTION2]' be replaced by '[MENTION1]'? Yes or no?",
+
+#     "'[TEXT]' I think '[MENTION2]' means '[MENTION1]'. Yes or no?",
+
+#     "Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. Now, please tell me whether the mention \"[MENTION2]\" refer to the mention \"[MENTION1]\" in the following sentence: \"[TEXT]\" Yes or No?",
+
+#     "Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. Now, please tell me whether the mention \"[MENTION2]\" is co-referred with the mention \"[MENTION1]\" in the following sentence: \"[TEXT]\" Yes or No?",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+# Use the following format:
+# Text: <the given text>
+# Mention1: <one mention in the given text>
+# Mention2: <another mention in the given text>
+# Answer: <Yes or No>
+
+# Text: \"\"\"[TEXT] \"\"\"
+# Mention1: [MENTION1]
+# Mention2: [MENTION2]
+# Answer:""",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+# Use the following format:
+# Text: <the given text>
+# Mention1: <one mention in the given text>
+# Mention2: <another mention in the given text>
+# Answer: <Yes or No>
+
+# Text:\"\"\"[TEXT] \"\"\"
+# Mention1: [MENTION1]
+# Mention2: [MENTION2]
+# Answer:""",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+# Use the following format:
+# Text: <the given text>
+# Mention1: <one mention in the given text>
+# Mention2: <another mention in the given text>
+# Answer: <Yes or No>
+
+# Text:\"\"\"[TEXT] \"\"\"
+# Mention1:" [MENTION1] "
+# Mention2:" [MENTION2] "
+# Answer:""",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+# Use the following format:
+# Text: <the given text>
+# Mention1: <one mention in the given text>
+# Mention2: <another mention in the given text>
+# Answer: <Yes or No>
+
+# Text: < [TEXT] >
+# Mention1: < [MENTION1] >
+# Mention2: < [MENTION2] >
+# Answer:""",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+# Use the following format:
+# Text: < the given text >
+# Mention1: < one mention in the given text >
+# Mention2: < another mention in the given text >
+# Answer: < Yes or No >
+
+# Text: < [TEXT] >
+# Mention1: < [MENTION1] >
+# Mention2: < [MENTION2] >
+# Answer:""",
+
+#     """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+# Use the following format:
+# Text: < the given text >
+# Mention1: < one mention in the given text >
+# Mention2: < another mention in the given text >
+# Answer: < Yes or No >
+
+# Text: < [TEXT] >
+# Mention1: < [MENTION1] >
+# Mention2: < [MENTION2] >
+# Answer:""",  # 相比于prompt11， 第一行删了最后的空格
+
+    """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < [TEXT] >
+Mention1: < [MENTION1] >
+Mention2: < [MENTION2] >
+Answer:""",
 ]
 
 #
@@ -78,13 +170,15 @@ logging.disable_progress_bar()
 #
 iter_logging = [["", 0, 0], ["", 0, 0], ["", 0, 0]]
 
-
 #
 SPACY_NLP = spacy.load("en_core_web_sm")
 SPACY_NLP.tokenizer = Tokenizer(SPACY_NLP.vocab)  # To tokenize just by space
 #
-log_file_path = local_path + "/Models/log.txt"
-log_file = open(log_file_path, mode="w", encoding="utf8")
+error_log_file_path = local_path + "/Models/log.txt"
+error_log_file = open(error_log_file_path, mode="w", encoding="utf8")
+#
+prompt_log_file_path = local_path + "/Models/promptlog.txt"
+prompt_log_file = open(prompt_log_file_path, mode="w", encoding="utf8")
 
 
 class docDataset:
@@ -333,9 +427,11 @@ def load_gold_data(local_path):
 
 # Generate Prompt
 def generate_prompt(template, text, mention_pair, text_token="[TEXT]", mention1_token="[MENTION1]", mention2_token="[MENTION2]"):
+    text = text.strip()
     template = template.replace(text_token, text)
     template = template.replace(mention1_token, mention_pair[0])
     template = template.replace(mention2_token, mention_pair[1])
+    template = template.strip()
     return template
 
 
@@ -508,6 +604,10 @@ def chatgpt35_create(prefix):
         "content": "You can only answer 'Yes' or 'No'."
     })
     """
+    messages.append({
+        "role": "system",
+        "content": "You are a helpful assistant."
+    })
     #
     matches = re.findall(r'([\s\S]+?)(Yes\n|No\n)', prefix)
     if len(matches) != n_shot:
@@ -524,7 +624,18 @@ def chatgpt35_create(prefix):
     return messages
 
 
+pred_index = 0  # 第i次预测
+
+
 def chatgpt35_pred(messages, prompt):
+    # print(f"{prompt}")
+    # r = input()
+    # if r != "1":
+    #     return "Yes"
+    global pred_index
+    pred_index += 1
+    print(f"{pred_index}##############\n{prompt}\n")
+    prompt_log_file.write(f"{pred_index}##############\n{prompt}\n")
     import openai
     pred = ""
     cur_time = time.time()
@@ -686,7 +797,7 @@ def annotate(
             #
             doc.create_mention_pairs()
             samples = doc.get_experiment_samples()
-            log_file.write(f"Doc:{doc_name}=============================\n")
+            error_log_file.write(f"Doc:{doc_name}=============================\n")
             # 遍历每个样本
             results = []
             """for s in tqdm(range(len(samples)), desc="样本", position=2, leave=False, ncols=60):"""
@@ -723,7 +834,7 @@ def annotate(
                         valid_count += 1
                     else:  # 其他结果不记入
                         # print(pred)
-                        log_file.write(f"the {j}_th instance of model with template {i} got a invalid pred '{pred}' at sample {s} \n")
+                        error_log_file.write(f"the {j}_th instance of model with template {i} got a invalid pred '{pred}' at sample {s} \n")
                 # 记录当前simple上n次预测的结果
                 if i == 0:
                     empty_line = [[0, 0] for _ in range(len(templates))] + [doc_name] + samples[s]
@@ -744,7 +855,7 @@ def annotate(
         torch.cuda.empty_cache()
         iter_logging[0][1] += 1
     # 保存结果
-    output_file = f"{root_path}/Results/{model_name}/{model_name}_gold_mentions_{data_config}_shot{n_examples}({prefixes_source})_beam{num_beams}_{'doSample' if do_sample else 'noSample'}(t{temperature}r{repeat_n}).csv"
+    output_file = f"{root_path}/Results/{model_name}/{model_name}_gold_mentions_{data_config}_shot{n_examples}({prefixes_source})_beam{num_beams}_{'doSample' if do_sample else 'noSample'}(t{temperature}r{repeat_n})plusplus.csv"
     result_df = pd.DataFrame(result)
     result_df.to_csv(output_file, mode="a", encoding="utf-8", index=False, header=False)
     """
@@ -889,5 +1000,7 @@ annotate(
 )
 
 #
-log_file.close()
-print(f"log 保存到{log_file_path}")
+error_log_file.close()
+print(f"error log 保存到{error_log_file_path}")
+prompt_log_file.close()
+print(f"prompt log 保存到{prompt_log_file_path}")

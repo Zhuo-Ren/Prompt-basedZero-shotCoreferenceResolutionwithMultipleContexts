@@ -1,0 +1,5 @@
+=IF(MID([@[Prompt 1]],2,1)="1", "P", "N")&IF(MID([@[Prompt 1]],2,1)=TEXT([@label],0), "T", "F")
+
+=IF(MID(A2,2,1)="1", "P", "N")&IF(MID(A2,2,1)=TEXT($P2,0), "T", "F")
+
+=COUNTIF(Q$2:Q$71, "PF")

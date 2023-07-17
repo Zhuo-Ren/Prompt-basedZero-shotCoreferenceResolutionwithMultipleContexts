@@ -1,0 +1,504 @@
+1##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < motorist >
+Answer:
+2##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < Wednesday night >
+Answer:
+3##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+4##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < driver >
+Answer:
+5##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < bystanders >
+Answer:
+6##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < woman >
+Mention2: < him >
+Answer:
+7##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < motorist >
+Mention2: < Wednesday night >
+Answer:
+8##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < motorist >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+9##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < motorist >
+Mention2: < driver >
+Answer:
+10##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < motorist >
+Mention2: < bystanders >
+Answer:
+11##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < motorist >
+Mention2: < him >
+Answer:
+12##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < Wednesday night >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+13##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < Wednesday night >
+Mention2: < driver >
+Answer:
+14##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < Wednesday night >
+Mention2: < bystanders >
+Answer:
+15##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < Wednesday night >
+Mention2: < him >
+Answer:
+16##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < driver >
+Answer:
+17##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < bystanders >
+Answer:
+18##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < him >
+Answer:
+19##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < driver >
+Mention2: < bystanders >
+Answer:
+20##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < driver >
+Mention2: < him >
+Answer:
+21##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < Police said alcohol was a factor.  A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop. >
+Mention1: < bystanders >
+Mention2: < him >
+Answer:
+22##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < motorist >
+Answer:
+23##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < Wednesday night >
+Answer:
+24##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+25##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < driver >
+Answer:
+26##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < bystanders >
+Answer:
+27##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < woman >
+Mention2: < him >
+Answer:
+28##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < motorist >
+Mention2: < Wednesday night >
+Answer:
+29##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < motorist >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+30##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < motorist >
+Mention2: < driver >
+Answer:
+31##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < motorist >
+Mention2: < bystanders >
+Answer:
+32##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < motorist >
+Mention2: < him >
+Answer:
+33##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < Wednesday night >
+Mention2: < outside a Sam 's Club store in Bloomington >
+Answer:
+34##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < Wednesday night >
+Mention2: < driver >
+Answer:
+35##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < Wednesday night >
+Mention2: < bystanders >
+Answer:
+36##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < Wednesday night >
+Mention2: < him >
+Answer:
+37##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < driver >
+Answer:
+38##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < bystanders >
+Answer:
+39##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < outside a Sam 's Club store in Bloomington >
+Mention2: < him >
+Answer:
+40##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < driver >
+Mention2: < bystanders >
+Answer:
+41##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < driver >
+Mention2: < him >
+Answer:
+42##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No, why >
+
+Text: < A woman hit and killed by a motorist Wednesday night outside a Sam's Club store in Bloomington might be alive if the driver had listened to bystanders who frantically pleaded with him to stop.  LuAnn Marie Johnson, 66, of Burnsville, was walking into the store at 200 W. American Blvd. with her husband when she was struck just after 7 p.m., said Sgt. Marty Earley. >
+Mention1: < bystanders >
+Mention2: < him >
+Answer:

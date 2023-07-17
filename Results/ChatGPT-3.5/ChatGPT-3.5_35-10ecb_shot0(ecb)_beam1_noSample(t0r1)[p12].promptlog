@@ -1,0 +1,840 @@
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < Jackson >
+Mention2: < earlier this week >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < Jackson >
+Mention2: < he >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < Jackson >
+Mention2: < Chargers >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < Jackson >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < earlier this week >
+Mention2: < he >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < earlier this week >
+Mention2: < Chargers >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < earlier this week >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < he >
+Mention2: < Chargers >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < he >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < Chargers ' Jackson arrested on suspicion of DUI  But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense. >
+Mention1: < Chargers >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < he >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < Chargers >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < 10News >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < earlier this week >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < Chargers >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < 10News >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < he >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < offense >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < 10News >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Chargers >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < 10News >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < offense >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < 10News >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < 10News >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < 10News >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < 10News >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < 10News >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < in San Diego >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < in San Diego >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < in San Diego >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < in San Diego >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Jackson >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Jackson >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < Jackson >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < California Highway Patrol >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < California Highway Patrol >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < But after being arrested for suspicion DUI earlier this week, he has bigger worries than his role in the Chargers ' offense.  10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests. >
+Mention1: < early Tuesday morning >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < 10News >
+Mention2: < in San Diego >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < 10News >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < 10News >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < 10News >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < 10News >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < in San Diego >
+Mention2: < Jackson >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < in San Diego >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < in San Diego >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < in San Diego >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < Jackson >
+Mention2: < California Highway Patrol >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < Jackson >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < Jackson >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < California Highway Patrol >
+Mention2: < early Tuesday morning >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < California Highway Patrol >
+Mention2: < tests >
+Answer:
+##############
+Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
+Use the following format:
+Text: < the given text >
+Mention1: < one mention in the given text >
+Mention2: < another mention in the given text >
+Answer: < Yes or No >
+
+Text: < 10News in San Diego is reporting that Jackson was arrested by the California Highway Patrol early Tuesday morning after failing sobriety tests.  CHP Officer Brad Baehr said Jackson was on probation for a previous DUI arrest. >
+Mention1: < early Tuesday morning >
+Mention2: < tests >
+Answer:
