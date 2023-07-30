@@ -26,7 +26,13 @@ strategy: Union[0,1,2,3]
     1: sentence level: mention pair in a continuous sentence or two are extracted.
     2: wd: mention pair in the same doc are extracted.
     3: cd-golden: mention pair in the same golden topic are extracted.
-    4: cd-pred: mention pair in the same predicted topic are extracted.
+    4: cd-pred: mention pair in the same predicted topic are extracted. The only difference between golden topics and the predicted topics are:
+       predcted:
+        ['38_11ecbplus', '38_1ecb', '38_2ecb', '38_3ecb', '38_3ecbplus', '38_4ecb', '38_4ecbplus', '38_7ecbplus', '38_8ecbplus']
+        ['38_10ecbplus', '38_1ecbplus', '38_2ecbplus', '38_5ecbplus', '38_6ecbplus', '38_9ecbplus']
+       golden:
+        ['38_10ecbplus', '38_11ecbplus', '38_1ecbplus', '38_2ecbplus', '38_3ecbplus', '38_4ecbplus', '38_5ecbplus', '38_6ecbplus', '38_7ecbplus', '38_8ecbplus', '38_9ecbplus']
+        ['38_1ecb', '38_2ecb', '38_3ecb', '38_4ecb'] 
 predicted_topics: str
     if strategy is 4, this is the path to predicted topics.
 """
@@ -143,8 +149,7 @@ def strategy_2(corpus):
 def strategy_3(corpus):
     mention_pairs = {}
     for topic_id in corpus.topics.keys():
-        cur_topic = corpus.topics[topic_id]
-        topic_num = int(topic_id.split("_")[0])  # 36_ecb and 36_ecbplus all mapped to the same topic num 36
+        cur_topic = corpus.topics[topic_id]  # 36_ecb and 36_ecbplus are different topics
         mentions_in_cur_topic = []
         for doc_id in cur_topic.docs.keys():
             cur_doc = cur_topic.docs[doc_id]
@@ -153,15 +158,15 @@ def strategy_3(corpus):
                 if cur_sent.is_selected:
                     mentions_in_cur_topic += cur_sent.gold_entity_mentions
                     mentions_in_cur_topic += cur_sent.gold_event_mentions
-        if topic_num not in mention_pairs.keys():
-            mention_pairs[topic_num] = []
+        if topic_id not in mention_pairs.keys():
+            mention_pairs[topic_id] = []
         for i in range(len(mentions_in_cur_topic)):
             for j in range(len(mentions_in_cur_topic)):
                 if i < j:
                     mention_i = mentions_in_cur_topic[i]
                     mention_j = mentions_in_cur_topic[j]
-                    mention_pairs[topic_num].append((mention_i, mention_j))
-        logging.info(f'strategy 3: topic {topic_id} has {len(mention_pairs[topic_num])} mention pairs')
+                    mention_pairs[topic_id].append((mention_i, mention_j))
+        logging.info(f'strategy 3: topic {topic_id} has {len(mention_pairs[topic_id])} mention pairs')
     # END OF for topic_id in corpus.topics.keys():
     logging.info(f'strategy 3: {sum([len(mention_pairs[cur_topic_num]) for cur_topic_num in mention_pairs.keys()])} mention pairs')
     print(f'strategy 3: {sum([len(mention_pairs[cur_topic_num]) for cur_topic_num in mention_pairs.keys()])} mention pairs')
@@ -182,6 +187,21 @@ def strategy_3(corpus):
 #             cur_doc = cur_topic.docs[doc_id]
 #             for sent_id in cur_doc.sentences.keys():
 #                 cur_sent = cur_doc.sentences[sent_id]
+#     t1 = test_set.topics
+#     t2 = topics
+#     s1 = set()
+#     s2 = set()
+#     for cur_t in t1.values():
+#         s1.add(str(
+#             sorted(cur_t.docs.keys())
+#         ))
+#     for cur_t in t2.values():
+#         s2.add(str(
+#             sorted(cur_t.docs.keys())
+#         ))
+#     cross = (s1 & s2)
+#     r1 = s1 - cross
+#     r2 = s2 - cross
 
 
 def main():
