@@ -79,14 +79,14 @@ def strategy_1(corpus):
                 # 生成mention pair： 当前句子和上一个句子之间的mention pair
                 for mention_i in mentions_in_last_sent:
                     for mention_j in mentions_in_cur_sent:
-                        mention_pairs[topic_num][doc_id].append((mention_i, mention_j))
+                        mention_pairs[topic_num][doc_id].append([mention_i, mention_j])
                 # 生成mention pair： 当前句子中的mention pair
                 for i in range(len(mentions_in_cur_sent)):
                     for j in range(len(mentions_in_cur_sent)):
                         if i < j:
                             mention_i = mentions_in_cur_sent[i]
                             mention_j = mentions_in_cur_sent[j]
-                            mention_pairs[topic_num][doc_id].append((mention_i, mention_j))
+                            mention_pairs[topic_num][doc_id].append([mention_i, mention_j])
                 # 更新
                 mentions_in_last_sent = mentions_in_cur_sent
         # END OF  for doc_id in cur_topic.docs.keys():
@@ -129,7 +129,7 @@ def strategy_2(corpus):
                     if i < j:
                         mention_i = mentions_in_cur_doc[i]
                         mention_j = mentions_in_cur_doc[j]
-                        mention_pairs[topic_num][doc_id].append((mention_i, mention_j))
+                        mention_pairs[topic_num][doc_id].append([mention_i, mention_j])
         # END OF  for doc_id in cur_topic.docs.keys():
         num_of_mention_pairs_in_cur_topic = sum([len(d) for d in mention_pairs[topic_num].values()])
         logging.info(f'strategy 2: topic {topic_id} has {num_of_mention_pairs_in_cur_topic} mention pairs')
@@ -165,7 +165,7 @@ def strategy_3(corpus):
                 if i < j:
                     mention_i = mentions_in_cur_topic[i]
                     mention_j = mentions_in_cur_topic[j]
-                    mention_pairs[topic_id].append((mention_i, mention_j))
+                    mention_pairs[topic_id].append([mention_i, mention_j])
         logging.info(f'strategy 3: topic {topic_id} has {len(mention_pairs[topic_id])} mention pairs')
     # END OF for topic_id in corpus.topics.keys():
     logging.info(f'strategy 3: {sum([len(mention_pairs[cur_topic_num]) for cur_topic_num in mention_pairs.keys()])} mention pairs')
