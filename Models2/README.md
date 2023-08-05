@@ -1,4 +1,5 @@
-* 运行`src/read_corpus.py`。
+## read corpus 
+* 运行`src/1.read_corpus.py`。
   * 输入：
     * ECB+语料
   * 配置(在`src/read_corpus.py`中的config_dict中配置)
@@ -25,7 +26,9 @@
     * test_data 以Corpus对象存储的test数据。
     * log.txt 日志。
     * read_corpus.py 就是代码本身，用于保存配置。
-* 运行`src/extract_mention_pair_from_test_data.py`
+     
+## extract mention pairs 
+* 运行`src/2.extract_mention_pair_from_test_data.py`
   * 输入：
     * `src/read_corpus.py`输出的test_data文件。
     * 如果不使用真实topic，而是使用其他文档聚类算法预测的topic，那么还要提供预测的topic信息。
@@ -41,9 +44,40 @@
     * strategy: Union[0,1,2,3]: 生成指称对的策略。
       * 0: All the following strategies.
       * 1: sentence level: mention pair in a continuous sentence or two are extracted.
-      * 2: wd: mention pair in the same doc are extracted.
+      * 2: wd: mention pair in the same doc are extracted. 注意，因为cd（策略3、策略4）的mention pairs其实包含了wd（策略2）的mention
+      * pairs。所以从成本考虑，如果你既要做cd的实验，又要做wd的实验，那么其实只做cd的实验就够了，wd的实验结果可以从cd实验的结果中抽取得到。
       * 3: cd-golden: mention pair in the same golden topic are extracted.
       * 4: cd-pred: mention pair in the same predicted topic are extracted.
   * 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
-    * strategy_{n}_corpus_and_mention_pairs 一个pkl文件，保存了一个元组。第一个项是corpus，第二个项是使用策略n抽取得到的mention pairs信息。
+    * test_strategy{n}.mp/csv 一个pkl/csv文件，描述使用策略n抽取得到的mention pairs信息，两者内容同源，只是csv更可视化一些。
+      * 观察test_strategy3.csv，筛选其中的wd的mention pair，一共是39252条。正好就是test_strategy2.csv中的那些。所以说strategy3包含了strategy2。
     * log.txt 日志。
+    * extract_mention_pairs_from_test_data.py 就是代码本身，用于保存配置。
+     
+## pred
+* 运行`src/3.pred.py`
+  * 输入：
+    * `src/read_corpus.py`输出的test_data文件。
+    * 如果不使用真实topic，而是使用其他文档聚类算法预测的topic，那么还要提供预测的topic信息。
+  * 配置(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)
+    }
+    * corpus_path: str: `src/read_corpus.py`输出的test_data文件的路径。
+    * predicted_topics: str: 指向外部文档聚类算法预测得到的topic信息的路径。
+    * output_path: str: ECB+语料附带的ECBplus_coreference_sentences.csv的路径。
+    * selected_sentences_only: Bool: Some sentences are selected in ECB+ corpus.
+      * True: Only mentions in selected sentences are extracted.
+      * False: All mentions are extracted.
+      * 注：这个值一直都是True，False的功能就没实现。放一个配置选项在这里，只是为了强调一下。
+    * strategy: Union[0,1,2,3]: 生成指称对的策略。
+      * 0: All the following strategies.
+      * 1: sentence level: mention pair in a continuous sentence or two are extracted.
+      * 2: wd: mention pair in the same doc are extracted. 注意，因为cd（策略3、策略4）的mention pairs其实包含了wd（策略2）的mention
+      * pairs。所以从成本考虑，如果你既要做cd的实验，又要做wd的实验，那么其实只做cd的实验就够了，wd的实验结果可以从cd实验的结果中抽取得到。
+      * 3: cd-golden: mention pair in the same golden topic are extracted.
+      * 4: cd-pred: mention pair in the same predicted topic are extracted.
+  * 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
+    * {选中数据}.corpus 一个pkl文件，保存了一个corpus对象。这个corpus对象根据你在`pred.py: config_dict['data']`中的配置,保存完整的测试集数据或其中的选定子集。预测是基于这个子集展开的。
+    * {model_name}_{data}_t{template_id}_s0_b1_noSample.mp 一个pkl文件，保存了mention pairs list。这个mention
+    *  pairs list使用策略n抽取得到的mention pairs信息。
+    * log.txt 日志。
+    * pred.py 就是代码本身，用于保存配置。

@@ -1,15 +1,17 @@
 # 标准库
 import os
 import _pickle as cPickle
+import shutil
 # from typing import Dict, List, Tuple, Union
 import logging
+import pandas as pd
 # 本地库
 from classes import Corpus, Topic, Document, Sentence, Token, EventMention, EntityMention, MentionData
 
 
 # config
 config_dict = {
-    "corpus_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\read_corpus\test_data",
+    "corpus_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\1.read_corpus\test_data",
     "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
     "selected_sentences_only": True,
     "strategy": 0,
@@ -55,6 +57,50 @@ elif len(os.listdir(config_dict["output_path"])) > 1:  # 大于1是因为上边�
     input("output dir is not empty, press ENTER to continue.")
 
 
+# save this file itself
+shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
+
+
+def save_mention_pairs(mention_pairs, strategy_id):
+    # save pkl
+    path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).mp')
+    with open(path, 'wb') as f:
+        cPickle.dump(mention_pairs, f)
+        print(f'strategy {strategy_id}: mention_pairs saved in {path}')
+    # save csv
+    path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).csv')
+    csv_list = []
+    csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "corefer?"])
+    first_value = list(mention_pairs.values())[0]
+    if type(first_value) is list: # mention_pairs是topic-mentionPairs的嵌套结构
+        for topic_id, topic_value in mention_pairs.items():
+            for mention1, mention2 in topic_value:
+                if_wd = (mention1.doc_id == mention2.doc_id)
+                csv_list.append([
+                    topic_id,
+                    mention1.doc_id, mention1.sent_id, mention1.mention_str,
+                    mention2.doc_id, mention2.sent_id, mention2.mention_str,
+                    "wd" if if_wd else "cd",
+                    abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
+                    mention1.gold_tag == mention2.gold_tag,
+                ])
+    elif type(first_value) is dict: # mention_pairs是topic-doc-mentionPairs的嵌套结构
+        for topic_id, topic_value in mention_pairs.items():
+            for doc_id, doc_value in topic_value.items():
+                for mention1, mention2 in doc_value:
+                    if_wd = (mention1.doc_id == mention2.doc_id)
+                    csv_list.append([
+                        topic_id,
+                        mention1.doc_id, mention1.sent_id, mention1.mention_str,
+                        mention2.doc_id, mention2.sent_id, mention2.mention_str,
+                        "wd" if if_wd else "cd",
+                        abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
+                        mention1.gold_tag == mention2.gold_tag,
+                    ])
+    csv_df = pd.DataFrame(csv_list)
+    csv_df.to_csv(path, mode="a", encoding="utf-8", index=False, header=False)
+
+
 def strategy_1(corpus):
     mention_pairs = {}
     num_of_mention_pairs = 0
@@ -75,7 +121,7 @@ def strategy_1(corpus):
                 mentions_in_cur_sent = []
                 if cur_sent.is_selected:
                     mentions_in_cur_sent += cur_sent.gold_entity_mentions
-                    mentions_in_cur_sent += cur_sent.gold_entity_mentions
+                    mentions_in_cur_sent += cur_sent.gold_event_mentions
                 # 生成mention pair： 当前句子和上一个句子之间的mention pair
                 for mention_i in mentions_in_last_sent:
                     for mention_j in mentions_in_cur_sent:
@@ -98,40 +144,39 @@ def strategy_1(corpus):
     print(f'strategy 1: {num_of_mention_pairs} mention pairs')
 
     # save
-    path = os.path.join(config_dict["output_path"], 'strategy_1_corpus_and_mention_pairs')
-    with open(path, 'wb') as f:
-        cPickle.dump((corpus, mention_pairs), f)
-        print(f'strategy 1: (corpus, mention_pairs) saved in {path}')
-    return corpus, mention_pairs
+    save_mention_pairs(mention_pairs, "1")
+    return mention_pairs
 
 
 def strategy_2(corpus):
     mention_pairs = {}
     num_of_mention_pairs = 0
     for topic_id in corpus.topics.keys():
+        num_of_mention_pairs_in_cur_topic = 0
         cur_topic = corpus.topics[topic_id]
-        topic_num = int(topic_id.split("_")[0])  # 36_ecb and 36_ecbplus all mapped to the same topic num 36
-        if topic_num not in mention_pairs.keys():
-            mention_pairs[topic_num] = {}
+        mention_pairs[topic_id] = {}
         for doc_id in cur_topic.docs.keys():
             cur_doc = cur_topic.docs[doc_id]
-            if doc_id not in mention_pairs[topic_num].keys():
-                mention_pairs[topic_num][doc_id] = []
+            if doc_id in mention_pairs[topic_id]:
+                raise RuntimeError
+            else:
+                mention_pairs[topic_id][doc_id] = []
+            # get all mentions in cur doc
             mentions_in_cur_doc = []
             for sent_id in cur_doc.sentences.keys():
                 cur_sent = cur_doc.sentences[sent_id]
                 if cur_sent.is_selected:
                     mentions_in_cur_doc += cur_sent.gold_entity_mentions
-                    mentions_in_cur_doc += cur_sent.gold_entity_mentions
+                    mentions_in_cur_doc += cur_sent.gold_event_mentions
             # 生成mention pair： 当前句子中的mention pair
             for i in range(len(mentions_in_cur_doc)):
                 for j in range(len(mentions_in_cur_doc)):
                     if i < j:
                         mention_i = mentions_in_cur_doc[i]
                         mention_j = mentions_in_cur_doc[j]
-                        mention_pairs[topic_num][doc_id].append([mention_i, mention_j])
+                        mention_pairs[topic_id][doc_id].append([mention_i, mention_j])
+                        num_of_mention_pairs_in_cur_topic += 1
         # END OF  for doc_id in cur_topic.docs.keys():
-        num_of_mention_pairs_in_cur_topic = sum([len(d) for d in mention_pairs[topic_num].values()])
         logging.info(f'strategy 2: topic {topic_id} has {num_of_mention_pairs_in_cur_topic} mention pairs')
         num_of_mention_pairs += num_of_mention_pairs_in_cur_topic
     # END OF for topic_id in corpus.topics.keys():
@@ -139,11 +184,8 @@ def strategy_2(corpus):
     print(f'strategy 2: {num_of_mention_pairs} mention pairs')
 
     # save
-    path = os.path.join(config_dict["output_path"], 'strategy_2_corpus_and_mention_pairs')
-    with open(path, 'wb') as f:
-        cPickle.dump((corpus, mention_pairs), f)
-        print(f'strategy 2: (corpus, mention_pairs) saved in {path}')
-    return corpus, mention_pairs
+    save_mention_pairs(mention_pairs, "2")
+    return mention_pairs
 
 
 def strategy_3(corpus):
@@ -172,11 +214,8 @@ def strategy_3(corpus):
     print(f'strategy 3: {sum([len(mention_pairs[cur_topic_num]) for cur_topic_num in mention_pairs.keys()])} mention pairs')
 
     # save
-    path = os.path.join(config_dict["output_path"], 'strategy_3_corpus_and_mention_pairs')
-    with open(path, 'wb') as f:
-        cPickle.dump((corpus, mention_pairs), f)
-        print(f'strategy 3: (corpus, mention_pairs) saved in {path}')
-    return corpus, mention_pairs
+    save_mention_pairs(mention_pairs, "3")
+    return mention_pairs
 
 
 # def strategy_4(corpus, predicted_topics):
@@ -202,6 +241,38 @@ def strategy_3(corpus):
 #     cross = (s1 & s2)
 #     r1 = s1 - cross
 #     r2 = s2 - cross
+
+def strategy_2_3_compatibility_check(ml2, ml3):
+    """
+    strategy 3 是cd mention pair， strategy 2 是wd mention pair。
+    原理上，前者应该包含后者。 此函数就检测这种包含关系是否成立。
+
+    :param ml2:
+    :param ml3:
+    :return: True表示兼容，False表示不兼容（其实就直接报RunTimeError了，根本到不了return）
+    """
+    ml2d = {}
+    for topic_num in ml2.keys():
+        for doc_id in ml2[topic_num].keys():
+            for mp_index in range(len(ml2[topic_num][doc_id])):
+                m1 = ml2[topic_num][doc_id][mp_index][0]
+                m2 = ml2[topic_num][doc_id][mp_index][1]
+                if (id(m1), id(m2)) in ml2d:
+                    raise RuntimeError
+                ml2d[(id(m1), id(m2))] = {"m1": m1, "m2": m2}
+    for doc_id in ml3.keys():
+        for mp_index in range(len(ml3[doc_id])):
+            mp = ml3[doc_id][mp_index]
+            m1 = mp[0]
+            m2 = mp[1]
+            # mp.append("wd" if m1.doc_id == m2.doc_id else "cd")
+            if m1.doc_id == m2.doc_id:
+                mp_id = (id(m1), id(m2))
+                if mp_id in ml2d:
+                    del ml2d[mp_id]
+                else:
+                    raise RuntimeError
+    return True
 
 
 def main():
@@ -229,14 +300,17 @@ def main():
         ml3 = strategy_3(corpus=corpus)
         # strategy_4(corpus=corpus, predicted_topics=predicted_topics)
     elif config_dict["strategy"] == 1:
-        c, ml1 = strategy_1(corpus=corpus)
+        ml1 = strategy_1(corpus=corpus)
     elif config_dict["strategy"] == 2:
-        c, ml2 = strategy_2(corpus=corpus)
+        ml2 = strategy_2(corpus=corpus)
     elif config_dict["strategy"] == 3:
-        c, ml3 = strategy_3(corpus=corpus)
+        ml3 = strategy_3(corpus=corpus)
     # elif config_dict["strategy"] == 4:
     #     strategy_4(corpus=corpus, predicted_topics=predicted_topics)
     print("END")
+
+    #
+    strategy_2_3_compatibility_check(ml2, ml3)
 
 
 if __name__ == '__main__':
