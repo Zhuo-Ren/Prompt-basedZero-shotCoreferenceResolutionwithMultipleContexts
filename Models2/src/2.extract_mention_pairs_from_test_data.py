@@ -62,6 +62,51 @@ shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
 
 
 def save_mention_pairs(mention_pairs, strategy_id):
+    """
+    把mention pairs保存成pkl和csv。
+    其中csv内容类似::
+
+        topic,m1_doc,m1_sent,m1_str,m2_doc,m2_sent,m2_str,wd/cd,seq,label
+        36,36_1ecb,0,leaders,36_1ecb,0,in Canada,wd,0,0
+        36,36_1ecb,0,leaders,36_1ecb,0,polygamist group,wd,0,0
+
+    mention_pairs指称两种格式。一种是topic-mentionPairs的2层嵌套结构::
+
+        mention_pairs = {
+            "36_ecbplus": [
+                [mention_obj, mention_obj],
+                [mention_obj, mention_obj],
+                ...
+            ],
+            ...
+        }
+
+    另一种是topic-doc-mentionPairs的3层嵌套结构::
+
+        mention_pairs = {
+            "36_ecbplus": {
+                "36_1ecbplus":[
+                    [mention_obj, mention_obj],
+                    [mention_obj, mention_obj],
+                    ...
+                ],
+                "36_2ecbplus":[
+                    [mention_obj, mention_obj],
+                    [mention_obj, mention_obj],
+                    ...
+                ],
+                ...
+            },
+            "36_ecb": {
+                ...
+            },
+            ...
+        }
+
+    :param mention_pairs: [(mention_obj_1, mention_obj_2)]
+    :param strategy_id: mention pair是基于哪个strategy生成的。这个信息只用于log。
+    :return: no return
+    """
     # save pkl
     path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).mp')
     with open(path, 'wb') as f:
@@ -70,7 +115,7 @@ def save_mention_pairs(mention_pairs, strategy_id):
     # save csv
     path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).csv')
     csv_list = []
-    csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "corefer?"])
+    csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "label"])
     first_value = list(mention_pairs.values())[0]
     if type(first_value) is list: # mention_pairs是topic-mentionPairs的嵌套结构
         for topic_id, topic_value in mention_pairs.items():
@@ -82,9 +127,9 @@ def save_mention_pairs(mention_pairs, strategy_id):
                     mention2.doc_id, mention2.sent_id, mention2.mention_str,
                     "wd" if if_wd else "cd",
                     abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
-                    mention1.gold_tag == mention2.gold_tag,
+                    1 if mention1.gold_tag == mention2.gold_tag else 0,
                 ])
-    elif type(first_value) is dict: # mention_pairs是topic-doc-mentionPairs的嵌套结构
+    elif type(first_value) is dict:  # mention_pairs是topic-doc-mentionPairs的嵌套结构
         for topic_id, topic_value in mention_pairs.items():
             for doc_id, doc_value in topic_value.items():
                 for mention1, mention2 in doc_value:
@@ -95,7 +140,7 @@ def save_mention_pairs(mention_pairs, strategy_id):
                         mention2.doc_id, mention2.sent_id, mention2.mention_str,
                         "wd" if if_wd else "cd",
                         abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
-                        mention1.gold_tag == mention2.gold_tag,
+                        1 if mention1.gold_tag == mention2.gold_tag else 0,
                     ])
     csv_df = pd.DataFrame(csv_list)
     csv_df.to_csv(path, mode="a", encoding="utf-8", index=False, header=False)
@@ -288,7 +333,7 @@ def main():
             ''' 外部算法预测的文档聚类结果
                 predicted_topics = [
                     ['45_6ecb', '45_8ecb'],  # 这是一个簇
-                    ['43_6ecb',43_4ecb]，  # 这是一个簇
+                    ['43_6ecb', '43_4ecb']，  # 这是一个簇
                     ...
                 ]
             '''

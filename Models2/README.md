@@ -28,15 +28,10 @@
     * read_corpus.py 就是代码本身，用于保存配置。
      
 ## extract mention pairs 
-* 运行`src/2.extract_mention_pair_from_test_data.py`
-  * 输入：
-    * `src/read_corpus.py`输出的test_data文件。
-    * 如果不使用真实topic，而是使用其他文档聚类算法预测的topic，那么还要提供预测的topic信息。
-  * 配置(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)
-    }
+* 输入(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)
     * corpus_path: str: `src/read_corpus.py`输出的test_data文件的路径。
-    * predicted_topics: str: 指向外部文档聚类算法预测得到的topic信息的路径。
-    * output_path: str: ECB+语料附带的ECBplus_coreference_sentences.csv的路径。
+    * predicted_topics: str: 如果不使用真实topic，而是使用其他文档聚类算法预测的topic(比如strategy 4)，那么还要提供预测的topic信息。这个配置给出指向外部文档聚类算法预测得到的topic信息的路径。
+    * output_path: str: ECB+语料附带的`ECBplus_coreference_sentences.csv`的路径。
     * selected_sentences_only: Bool: Some sentences are selected in ECB+ corpus.
       * True: Only mentions in selected sentences are extracted.
       * False: All mentions are extracted.
@@ -45,12 +40,52 @@
       * 0: All the following strategies.
       * 1: sentence level: mention pair in a continuous sentence or two are extracted.
       * 2: wd: mention pair in the same doc are extracted. 注意，因为cd（策略3、策略4）的mention pairs其实包含了wd（策略2）的mention
-      * pairs。所以从成本考虑，如果你既要做cd的实验，又要做wd的实验，那么其实只做cd的实验就够了，wd的实验结果可以从cd实验的结果中抽取得到。
+       pairs。所以从成本考虑，如果你既要做cd的实验，又要做wd的实验，那么其实只做cd的实验就够了，wd的实验结果可以从cd实验的结果中抽取得到。
       * 3: cd-golden: mention pair in the same golden topic are extracted.
       * 4: cd-pred: mention pair in the same predicted topic are extracted.
-  * 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
+* 运行`src/2.extract_mention_pair_from_test_data.py`
+* 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
     * test_strategy{n}.mp/csv 一个pkl/csv文件，描述使用策略n抽取得到的mention pairs信息，两者内容同源，只是csv更可视化一些。
-      * 观察test_strategy3.csv，筛选其中的wd的mention pair，一共是39252条。正好就是test_strategy2.csv中的那些。所以说strategy3包含了strategy2。
+        * pkl文件类似
+          ```python
+            # 一种是topic-mentionPairs的2层嵌套结构
+            mention_pairs = {
+                "36_ecbplus": [
+                    [mention_obj, mention_obj],
+                    [mention_obj, mention_obj],
+                    ...
+                ],
+                ...
+            }
+                
+            # 另一种是topic-doc-mentionPairs的3层嵌套结构
+            mention_pairs = {
+                "36_ecbplus": {
+                    "36_1ecbplus":[
+                        [mention_obj, mention_obj],
+                        [mention_obj, mention_obj],
+                        ...
+                    ],
+                    "36_2ecbplus":[
+                        [mention_obj, mention_obj],
+                        [mention_obj, mention_obj],
+                        ...
+                    ],
+                    ...
+                },
+                "36_ecb": {
+                    ...
+                },
+                ...
+            }
+          ```
+        * csv文件类似于：
+          ```csv
+            topic,m1_doc,m1_sent,m1_str,m2_doc,m2_sent,m2_str,wd/cd,seq,label
+            36,36_1ecb,0,leaders,36_1ecb,0,in Canada,wd,0,0
+            36,36_1ecb,0,leaders,36_1ecb,0,polygamist group,wd,0,0
+          ```
+        * 观察test_strategy3.csv，筛选其中的wd的mention pair，一共是39252条。正好就是test_strategy2.csv中的那些。所以说strategy3包含了strategy2。
     * log.txt 日志。
     * extract_mention_pairs_from_test_data.py 就是代码本身，用于保存配置。
      
