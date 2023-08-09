@@ -27,7 +27,7 @@
     * log.txt 日志。
     * read_corpus.py 就是代码本身，用于保存配置。
      
-## extract mention pairs 
+## extract mention pairs from test data 
 * 输入(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)
     * corpus_path: str: `src/read_corpus.py`输出的test_data文件的路径。
     * predicted_topics: str: 如果不使用真实topic，而是使用其他文档聚类算法预测的topic(比如strategy 4)，那么还要提供预测的topic信息。这个配置给出指向外部文档聚类算法预测得到的topic信息的路径。
@@ -47,7 +47,7 @@
 * 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
     * test_strategy{n}.mp/csv 一个pkl/csv文件，描述使用策略n抽取得到的mention pairs信息，两者内容同源，只是csv更可视化一些。
         * pkl文件类似
-          ```python
+          ```text
             # 一种是topic-mentionPairs的2层嵌套结构
             mention_pairs = {
                 "36_ecbplus": [
@@ -90,29 +90,21 @@
     * extract_mention_pairs_from_test_data.py 就是代码本身，用于保存配置。
      
 ## pred
+* 输入(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)：
+    * corpus_path: str: `src/1.read_corpus.py`输出的`test_data`文件的路径。
+    * mention_pairs_path: 输`src/2.extract_mention_pairs_from_test_data.py`出的`test(strategy{1/2/3/4}).mp`的路径。
+    * output_path: str: 输出路径。
+    * models: 使用哪几个模型进行试验，以及这几个模型各自的配置。具体请见`src/extract_mention_pair_from_test_data.py: config_dict['models']`。
+    * templates: 使用哪几款模板来生成prompt。这里写模板的id。模板id是``src/template.py`中的字典key。
+    * data: corpus_path中传入的整个测试集。如果想只跑其中的部分topic，则在这里指定。如果跑整个测试集则设为字符串"all"。
 * 运行`src/3.pred.py`
-  * 输入：
-    * `src/read_corpus.py`输出的test_data文件。
-    * 如果不使用真实topic，而是使用其他文档聚类算法预测的topic，那么还要提供预测的topic信息。
-  * 配置(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)
-    }
-    * corpus_path: str: `src/read_corpus.py`输出的test_data文件的路径。
-    * predicted_topics: str: 指向外部文档聚类算法预测得到的topic信息的路径。
-    * output_path: str: ECB+语料附带的ECBplus_coreference_sentences.csv的路径。
-    * selected_sentences_only: Bool: Some sentences are selected in ECB+ corpus.
-      * True: Only mentions in selected sentences are extracted.
-      * False: All mentions are extracted.
-      * 注：这个值一直都是True，False的功能就没实现。放一个配置选项在这里，只是为了强调一下。
-    * strategy: Union[0,1,2,3]: 生成指称对的策略。
-      * 0: All the following strategies.
-      * 1: sentence level: mention pair in a continuous sentence or two are extracted.
-      * 2: wd: mention pair in the same doc are extracted. 注意，因为cd（策略3、策略4）的mention pairs其实包含了wd（策略2）的mention
-      * pairs。所以从成本考虑，如果你既要做cd的实验，又要做wd的实验，那么其实只做cd的实验就够了，wd的实验结果可以从cd实验的结果中抽取得到。
-      * 3: cd-golden: mention pair in the same golden topic are extracted.
-      * 4: cd-pred: mention pair in the same predicted topic are extracted.
-  * 输出（之后剪切到`data/extract_mention_pair_from_test_data`中保存）：
+* 输出（之后剪切到`data/extract_mention_pair_from_test_data/{这里随便写，每次试验放在不同的文件夹中}`中保存）：
     * {选中数据}.corpus 一个pkl文件，保存了一个corpus对象。这个corpus对象根据你在`pred.py: config_dict['data']`中的配置,保存完整的测试集数据或其中的选定子集。预测是基于这个子集展开的。
-    * {model_name}_{data}_t{template_id}_s0_b1_noSample.mp 一个pkl文件，保存了mention pairs list。这个mention
-    *  pairs list使用策略n抽取得到的mention pairs信息。
+    * {data}_{model_setting}_{prefix_num}shot_t{template_id}_{do_sample}(r{repeat}).{mp/csv/promptlog} 
+        * 类似`['36_ecb', '36_ecbplus'](strategy3)_ChatGPT3.5(b1t0)_0shot_t14DAM_noSample(r1).mp`。
+        * 看输出可以发现，每次可以输出多个model和多个template。本程序把一个model-template对儿看做一次实验，为每次试验输出一组mp csv promptlog文件。文件名就表名了试验的配置（在什么数据上调用了什么model，跑了基于哪个模板的prompt等等）。比如配置中models给了仨，templates给了俩，那么就是2×3=6次试验，每次试验都有一组mp csv promptlog文件输出。
+        * mp是一个pkl文件，在`src/2.extract_mention_pairs_from_test_data.py`输出的`test(strategy{1/2/3/4}.mp`的基础上，增加了模型预测结果。
+        * csv是mp文件的可视化输出。
+        * promptlog是每个样例的prompt记录。
     * log.txt 日志。
-    * pred.py 就是代码本身，用于保存配置。
+    * 3.pred.py 就是代码本身，用于保存配置。

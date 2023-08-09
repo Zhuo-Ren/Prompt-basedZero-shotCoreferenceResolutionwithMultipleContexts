@@ -5,6 +5,7 @@ import _pickle as cPickle
 # from typing import Dict, List, Tuple, Union
 import logging
 import time
+import datetime
 import shutil
 import pandas as pd
 # 本地库
@@ -28,18 +29,21 @@ config_dict = {
                 "role": "system",
                 "content": "You can only answer 'Yes' or 'No'."
             },  # or None if you do not use system message
+            "model_config_desc": "b1t0",  # beam_size=1 temperature=0
+            "beam": 1,
             "temperature": 0,
+            "prefix_num": 0,
             "do_sample": False,
             "repeat": 1,
         },
     },
-    "templates": ["14DAM"],
-    "data": ["36_ecb","36_ecbplus"]
+    "templates": ["14DAM", "15DAM"],
+    "data": ["36_ecb", "36_ecbplus"]  # "all"
 }
 
 # 临时代码，用于清空输出路径
-for file in os.listdir(config_dict["output_path"]):
-    os.remove(os.path.join(config_dict["output_path"], file))
+# for file in os.listdir(config_dict["output_path"]):
+#     os.remove(os.path.join(config_dict["output_path"], file))
 
 # logging
 logging.basicConfig(
@@ -50,10 +54,12 @@ logging.basicConfig(
     level=logging.INFO
 )
 print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
+logging.info(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
 
 # output dir
 if not os.path.exists(config_dict["output_path"]):
     print(f"make output dir: {config_dict['output_path']}")
+    logging.info(f"make output dir: {config_dict['output_path']}")
     os.makedirs(config_dict["output_path"])
 elif len(os.listdir(config_dict["output_path"])) > 1:  # 大于1是因为上边配置logging的时候就建立的log.txt这个文件
     input("output dir is not empty, press ENTER to continue.")
@@ -152,9 +158,9 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
     context = context.strip()
     return context
 
+
 def make_prompt(template_index, mention1, mention2):
     template = templates_list[template_index]
-    corpus = config_dict["corpus"]
     #
     mention1_str = mention1.mention_str
     mention2_str = mention2.mention_str
@@ -236,7 +242,6 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
             #
             global pred_index
             pred_index += 1
-            print(f"{pred_index}##############\n{prompt}\n")
             prompt_log_file = config_dict["prompt_log_file"]
             prompt_log_file.write(f"{pred_index}##############\n{prompt}\n")
             pred = ""
@@ -307,7 +312,7 @@ def predicate(model_name, template_id, mention_pairs):
     # get the first value of mention_pairs
     first_value = list(mention_pairs.values())[0]
     # check its type
-    if type(first_value) is list: # mention_pairs是topic-mentionPairs的嵌套结构
+    if type(first_value) is list:  # mention_pairs是topic-mentionPairs的嵌套结构
         #
         pred_index = 0
         #
@@ -315,7 +320,7 @@ def predicate(model_name, template_id, mention_pairs):
             for cur_mention_pairs in topic_value:
                 predicated_result = process_a_mention_pair(model_name, template_id, cur_mention_pairs[0], cur_mention_pairs[1])
                 cur_mention_pairs.append(predicated_result)
-    elif type(first_value) is dict: # mention_pairs是topic-doc-mentionPairs的嵌套结构
+    elif type(first_value) is dict:  # mention_pairs是topic-doc-mentionPairs的嵌套结构
         #
         pred_index = 0
         #
@@ -333,55 +338,58 @@ def main():
     for cur_model_name, cur_model_config in config_dict["models"].items():
         for cur_template_id in config_dict["templates"]:
             # 针对当前model和当前template实验一次
-            logging.info(f"Start {cur_model_name} model with template {cur_template_id}============================")
-            print(f"Start {cur_model_name} model with template {cur_template_id}============================")
+            logging.info(f"{datetime.datetime.now()}: Start {cur_model_name} model with template {cur_template_id}============================")
+            print(f"{datetime.datetime.now()}: Start {cur_model_name} model with template {cur_template_id}============================")
             # read corpus
             with open(config_dict["corpus_path"], 'rb') as f:
                 corpus = cPickle.load(f)
             with open(config_dict["mention_pairs_path"], 'rb') as f:
                 mention_pairs = cPickle.load(f)
             #
-            strategy_id = re.search("test\(strategy([0-4])\).mp", config_dict["mention_pairs_path"]).groups()[0]
+            strategy_id = re.search(r"test\(strategy([0-4])\).mp", config_dict["mention_pairs_path"]).groups()[0]
             # select a subset of the whole corpus
-            topics_list = list(corpus.topics.keys())  # TODO: 知识点总结。如果不加list()，那么topics_list是会随着corpus的改变而改变的。
-            for cur_topic_id in topics_list:
-                if cur_topic_id not in config_dict["data"]:
-                    del corpus.topics[cur_topic_id]
-            topics_list = list(mention_pairs.keys())
-            for cur_topic_id in topics_list:
-                if cur_topic_id not in config_dict["data"]:
-                    del mention_pairs[cur_topic_id]
+            if config_dict["data"] != "all":
+                topics_list = list(corpus.topics.keys())  # TODO: 知识点总结。如果不加list()，那么topics_list是会随着corpus的改变而改变的。
+                for cur_topic_id in topics_list:
+                    if cur_topic_id not in config_dict["data"]:
+                        del corpus.topics[cur_topic_id]
+                topics_list = list(mention_pairs.keys())
+                for cur_topic_id in topics_list:
+                    if cur_topic_id not in config_dict["data"]:
+                        del mention_pairs[cur_topic_id]
             config_dict["corpus"] = corpus
             config_dict["mention_pairs"] = mention_pairs
             #
-            config_dict["file_name"] = f"{config_dict['data']}(strategy{strategy_id})_{cur_model_name}_t{cur_template_id}_s0_b1_noSample"
-            config_dict["corpus_path"] = f"{config_dict['output_path']}/{config_dict['file_name']}.pkl"
+            config_dict["file_name"] = f"{config_dict['data']}(strategy{strategy_id})_{cur_model_name}({cur_model_config['model_config_desc']})_{cur_model_config['prefix_num']}shot_t{cur_template_id}_{'doSample' if cur_model_config['do_sample'] else 'noSample'}(r{cur_model_config['repeat']})"
             config_dict["prompt_log_file_path"] = f"{config_dict['output_path']}/{config_dict['file_name']}.promptlog"
             config_dict["prompt_log_file"] = open(config_dict["prompt_log_file_path"], mode="w", encoding="utf8")
             #
+            global pred_index
             pred_index = 0
             # 构建模型
             config_dict["models"][cur_model_name]["model_components"] = create_model(cur_model_name)
             # 预测
             predicate(cur_model_name, cur_template_id, mention_pairs)
             # 保存
-            corpus_path = f"{config_dict['output_path']}\{config_dict['data']}.corpus"
-            if not os.path.exists(corpus_path):
+            corpus_path = rf"{config_dict['output_path']}\{config_dict['data']}.corpus"
+            if not os.path.exists(corpus_path):  # corpus保存一份就行了，因为这些实验共用同一份数据
                 with open(corpus_path, 'wb') as f:
                     cPickle.dump(corpus, f)
-                    print(f"corpus obj of {config_dict['data']} saved in {corpus_path}")
+                    print(f"{datetime.datetime.now()}: corpus obj of {config_dict['data']} saved in {corpus_path}")
+                    logging.info(f"corpus obj of {config_dict['data']} saved in {corpus_path}")
             os.path.exists(corpus_path)
             # 保存
-            mention_pairs_path = f"{config_dict['output_path']}\{config_dict['file_name']}.mp"
+            mention_pairs_path = rf"{config_dict['output_path']}\{config_dict['file_name']}.mp"
             if os.path.exists(mention_pairs_path):
                 raise RuntimeError("重复的保存")
             with open(mention_pairs_path, 'wb') as f:
                 cPickle.dump(mention_pairs, f)
-                print(f"mention pairs list and pred result under cur config saved in {corpus_path}")
+                print(f"{datetime.datetime.now()}: mention pairs list and pred result under cur config saved in {mention_pairs_path}")
+                logging.info(f"{datetime.datetime.now()}: mention pairs list and pred result under cur config saved in {mention_pairs_path}")
             # 保存
-            mention_pairs_path = f"{config_dict['output_path']}\{config_dict['file_name']}.csv"
+            mention_pairs_path = rf"{config_dict['output_path']}\{config_dict['file_name']}.csv"
             csv_list = []
-            csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "corefer?", cur_template_id])
+            csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "label", cur_template_id])
             for cur_topic_id in mention_pairs.keys():
                 for mention1, mention2, [true_num, validated_num, repeat_num] in mention_pairs[cur_topic_id]:
                     if_wd = (mention1.doc_id == mention2.doc_id)
@@ -391,21 +399,29 @@ def main():
                         mention2.doc_id, mention2.sent_id, mention2.mention_str,
                         "wd" if if_wd else "cd",
                         abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
-                        mention1.gold_tag == mention2.gold_tag,
+                        1 if mention1.gold_tag == mention2.gold_tag else 0,
                         [true_num, validated_num, repeat_num]
                     ])
             csv_df = pd.DataFrame(csv_list)
             csv_df.to_csv(mention_pairs_path, mode="a", encoding="utf-8", index=False, header=False)
+            print(f"{datetime.datetime.now()}: mention pairs csv under cur config saved in {mention_pairs_path}")
+            logging.info(f"{datetime.datetime.now()}: mention pairs csv under cur config saved in {mention_pairs_path}")
             # 销毁模型（释放内存）
             del config_dict["models"][cur_model_name]["model_components"]
             #
             del config_dict["file_name"]
-            del config_dict["corpus_path"]
+            print(f"{datetime.datetime.now()}: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
+            logging.info(f"{datetime.datetime.now()}: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
             del config_dict["prompt_log_file_path"]
+            config_dict["prompt_log_file"].close()
             del config_dict["prompt_log_file"]
+
             #
-            del config_dict["corpus"]
             del config_dict["mention_pairs"]
+            #
+            logging.info(f"{datetime.datetime.now()}: End")
+            print(f"{datetime.datetime.now()}: End")
+
 
 if __name__ == '__main__':
     main()
