@@ -108,3 +108,13 @@
         * promptlog是每个样例的prompt记录。
     * log.txt 日志。
     * 3.pred.py 就是代码本身，用于保存配置。
+## mention pairs scorer
+* 输入(在`src/4.mention_pairs_scorer.py`中的config_dict中配置)：
+    * csv_path: str: `src/3.pred.py`中每个试验都对应输出一个csv文件。你相对那几个试验进行统计，就把哪些csv文件放到一个文件夹下。此程序会非迭代得读取此文件夹下的所有csv文件。这一配置就给出此文件夹的路径。
+    * output_path: str: 输出路径。
+* 运行`src/4.mention_pairs_scorer.py`。功能是对指称对的预测结果进行性能评估。注意，这里没做聚类，没有形成簇，只是对指称对的预测结果进行性能评估，所以还是采用了传统的p r F1等指标。
+* 输出
+    * `4.mention_pairs_scorer.py`就是代码本身，用于保存配置。
+    * log.txt 日志。
+    * performance_list.csv 一个试验一行。
+    * performance_table.csv 和performance_list.csv相同的内容，但是按照model为列，template为行的形式组织成表格的形式了。
