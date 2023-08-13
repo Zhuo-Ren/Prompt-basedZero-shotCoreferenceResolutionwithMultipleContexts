@@ -1,72 +1,112 @@
 # 标准库
 import re
 import os
+import sys
+from tqdm import tqdm
 import _pickle as cPickle
 # from typing import Dict, List, Tuple, Union
 import logging
 import time
 import datetime
 import shutil
+import torch
 import pandas as pd
 # 本地库
 from classes import Corpus, Topic, Document, Sentence, Token, EventMention, EntityMention, MentionData
 from template import templates_list
 
 
+global pred_index
+pred_index = 0
+
+project_path = ""
+if sys.platform.startswith('win'):
+    project_path = r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main"
+elif sys.platform.startswith('linux'):
+    project_path = r"/root/WhatGPTKnowsAboutWhoIsWho-main"
+else:
+    print('未知的操作系统')
+print(f"Using project path: {project_path}")
+
 # config
 config_dict = {
-    "corpus_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\1.read_corpus\test_data",
-    "mention_pairs_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\2.extract_mention_pairs_from_test_data\test(strategy3).mp",
-    "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
+    "corpus_and_mention_pairs_path": os.path.join(
+        project_path,
+        "Models2", "data", "2.extract_mention_pairs_from_test_data",
+        "test_data(strategy3).c_mp"),
+    "output_path": os.path.join(project_path, "Models2", "output"),
     "models": {
         # "GPT2": {
         #     "prefix": "",
         # },
         # "ChatGLM6B": {
+        #     # model
+        #     "model_path": "/root/autodl-tmp/chatglm-6b",
+        #     "model_config_desc": "b1t0",
+        #     "beam": 1,
+        #     "temperature": 0,
+        #     #
+        #     "prefix_num": 0,
+        #     "prefix": "",
+        #     "do_sample": False,
+        #     "repeat": 1,
         # },
         "ChatGPT3.5": {
             "system_message": {
                 "role": "system",
                 "content": "You can only answer 'Yes' or 'No'."
             },  # or None if you do not use system message
-            "model_config_desc": "b1t0",  # beam_size=1 temperature=0
+            "model_config_desc": "b1t0",
             "beam": 1,
             "temperature": 0,
+            #
             "prefix_num": 0,
             "do_sample": False,
             "repeat": 1,
         },
     },
-    "templates": ["14DAM", "15DAM"],
-    "data": ["36_ecb", "36_ecbplus"]  # "all"
+    "templates": ["16DAM"],
+    "data": ["36_ecb"]  # , "36_ecbplus"]  # "all"
 }
 
 # 临时代码，用于清空输出路径
-# for file in os.listdir(config_dict["output_path"]):
-#     os.remove(os.path.join(config_dict["output_path"], file))
+shutil.rmtree(config_dict["output_path"])
+
+
+# output dir
+if not os.path.exists(config_dict["output_path"]):
+    print(f"make output dir: {config_dict['output_path']}")
+    os.makedirs(config_dict["output_path"])
+elif len(os.listdir(config_dict["output_path"])) > 0:
+    input("output dir is not empty, press ENTER to continue.")
 
 # logging
 logging.basicConfig(
+    handlers=[logging.FileHandler(
+        filename=os.path.join(config_dict["output_path"], "log.txt"),
+        encoding='utf-8',
+        mode='w'
+    )],
     # 使用fileHandler,日志文件在输出路径中(test_log.txt)
-    filename=os.path.join(config_dict["output_path"], "log.txt"),
-    filemode="w",
     # 配置日志级别
     level=logging.INFO
 )
 print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
 logging.info(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
 
-# output dir
-if not os.path.exists(config_dict["output_path"]):
-    print(f"make output dir: {config_dict['output_path']}")
-    logging.info(f"make output dir: {config_dict['output_path']}")
-    os.makedirs(config_dict["output_path"])
-elif len(os.listdir(config_dict["output_path"])) > 1:  # 大于1是因为上边配置logging的时候就建立的log.txt这个文件
-    input("output dir is not empty, press ENTER to continue.")
+# error log
+file_path = os.path.join(config_dict["output_path"], "err.log.txt")
+f = open(file_path, mode="w", encoding="utf8")
+config_dict["error_log"] = f
 
-
+#
 # save this file itself
 shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
+
+
+# 配置GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 
 
 def get_context(mention1, mention2, context_level="sentence", mark_mention=False, selected_sentence_only=True):
@@ -101,7 +141,7 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
             target = [
                 [
                     mention1.doc_id,
-                    [i for i in sent_indexes if i >= sent_max]
+                    [i for i in sent_indexes if i <= sent_max]
                 ]
             ]
         else:
@@ -110,11 +150,11 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
             target = [
                 [
                     mention1.doc_id,
-                    [i for i in mention1_sent_indexes if i >= mention1.sent_id]
+                    [i for i in mention1_sent_indexes if i <= mention1.sent_id]
                 ],
                 [
                     mention2.doc_id,
-                    [i for i in mention2_sent_indexes if i >= mention2.sent_id]
+                    [i for i in mention2_sent_indexes if i <= mention2.sent_id]
                 ]
             ]
     elif context_level == "sent":
@@ -148,14 +188,34 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
             cur_sent = sents[cur_sent_index]
             #
             for cur_token in cur_sent.tokens:
-                if cur_token in start_tokens:
+                # 加<mention>
+                if mark_mention & (id(cur_token) in [id(i) for i in start_tokens]):
                     context += " <mention>"
-                context += " "
+                # 加空格
+                if cur_token.token not in ["'s", ".", "!", "?", ",", ";", ":", ")", "]", "}"]:
+                    context += " "
+                # 加词
                 context += cur_token.token
-                if cur_token in end_tokens:
+                # 加</mention>
+                if mark_mention & (id(cur_token) in [id(i) for i in end_tokens]):
                     context += " </mention>"
+            else:
+                # 给标题加个句号
+                if cur_sent.tokens[-1].token not in [".", "!", "?", "''"]:
+                    config_dict["error_log"].write(f"End of sent error at {doc_id}-sent{cur_sent_index}:{cur_sent.tokens[-1].token}\n")
+                    context += "."
+        "END OF for cur_sent_index in sent_indexes"
+        context += " $$"  # 如果是多个文档，那么之间用此符号分割
+    context = context[:-2]
     #
     context = context.strip()
+    context = context.replace("`` ", "\"")
+    context = context.replace(" ''", "\"")
+    # 如果mark mention，则检测是否有2个<mention>
+    if mark_mention:
+        if len(re.findall("<mention>", context)) != 2:
+            context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False)
+    #
     return context
 
 
@@ -165,20 +225,22 @@ def make_prompt(template_index, mention1, mention2):
     mention1_str = mention1.mention_str
     mention2_str = mention2.mention_str
     # context with target mentions un-marked
+    """
     context_sent_nomark_all = get_context(mention1, mention2, context_level="sent", mark_mention=False, selected_sentence_only=False)
     context_doc_nomark_all = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=False)
     context_doc_nomark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=True)
+    """
     # context with target mentions marked by labels
-    context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False)
+    # context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False)
     context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False)
-    context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True)
+    # context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True)
     #
-    template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
-    template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)
-    template = template.replace("[D_CONTEXT]", context_doc_nomark_all)
-    template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)
+    # template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
+    # template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)
+    # template = template.replace("[D_CONTEXT]", context_doc_nomark_all)
+    # template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)
     template = template.replace("[D_CONTEXT_marked]", context_doc_mark_all)
-    template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)
+    # template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)
     template = template.replace("[MENTION1]", mention1_str)
     template = template.replace("[MENTION2]", mention2_str)
     # template = template.strip()
@@ -195,12 +257,12 @@ def create_model(model_name):
     elif model_name == "ChatGLM6B":
         from transformers import AutoTokenizer, AutoModel
         tokenizer = AutoTokenizer.from_pretrained(
-            "/root/autodl-tmp/chatglm-6b",
+            model_config["model_path"],
             trust_remote_code=True,
             revision=""
         )
         model = AutoModel.from_pretrained(
-            "/root/autodl-tmp/chatglm-6b",
+            model_config["model_path"],
             trust_remote_code=True,
             prefix=model_config["prefix"],
             revision=""
@@ -215,10 +277,16 @@ def create_model(model_name):
 
 
 def process_a_mention_pair(model_name, template_id, mention1, mention2):
+    #
     model_config = config_dict["models"][model_name]
-    prompt = make_prompt(template_id, mention1, mention2)
     true_num, validated_num, repeat_num = 0, 0, model_config["repeat"]
     ground_truth = (mention1.gold_tag == mention2.gold_tag)
+    #
+    prompt = make_prompt(template_id, mention1, mention2)
+    global pred_index
+    pred_index += 1
+    prompt_log_file = config_dict["prompt_log_file"]
+    prompt_log_file.write(f"{pred_index}##############\n{prompt}\n")
     for repeat_index in range(repeat_num):
         if model_name == "GPT2":
             tokenizer = model_config["model_components"][0]
@@ -234,16 +302,17 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
             pred = outputs[len(inputs.input_ids[0]):]
             pred = tokenizer.decode(pred, skip_special_tokens=True)
         elif model_name == "ChatGLM6B":
-            pred = True
+            tokenizer, model = model_config["model_components"]
+            inputs = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+            outputs = model.generate(inputs, max_new_tokens=1, do_sample=model_config["do_sample"], num_beams=model_config["beam"], temperature=model_config["temperature"])
+            outputs = outputs.tolist()[0]
+            outputs = outputs[len(inputs[0]):]
+            pred = tokenizer.decode(outputs, skip_special_tokens=True)
         elif model_name == "ChatGPT3.5":
             import openai
             #
             messages = model_config["model_components"]
             #
-            global pred_index
-            pred_index += 1
-            prompt_log_file = config_dict["prompt_log_file"]
-            prompt_log_file.write(f"{pred_index}##############\n{prompt}\n")
             pred = ""
             cur_time = time.time()
             while True:
@@ -256,17 +325,12 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
                         "role": "user",
                         "content": prompt
                     })
-                    # if model_config["do_sample"]:  # do sample
-                    #     r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=m, temperature=model_config["temperature"], max_tokens=1)
-                    # else:  # no sample
-                    #     r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=m, temperature=0.0, max_tokens=1)
-                    # pred = r["choices"][0]["message"]["content"]
-                    pred = "Yes"
-                    pred = True
-                    validated_num += 1
-                    if pred == ground_truth:
-                        true_num += 1
-                    print("success", time.time())
+                    if model_config["do_sample"]:  # do sample
+                        r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=m, temperature=model_config["temperature"], max_tokens=1,timeout=10, request_timeout=10)
+                    else:  # no sample
+                        r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=m, temperature=0.0, max_tokens=1, timeout=10, request_timeout=10)
+                    pred = r["choices"][0]["message"]["content"]
+                    # pred = "Yes"
                     break
                 except openai.OpenAIError as e:
                     # 如果是访问过快就等等
@@ -278,12 +342,13 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
                         print("bad gateway", time.time())
                         if (time.time() - cur_time) < 1:
                             input("two error in 1 second")
+                            time.sleep(10)
                         cur_time = time.time()
                         pass
                     # 如果是The server is overloaded or not ready yet.就重试
                     elif "The server is overloaded or not ready yet" in e._message:
                         print("server overloaded", time.time())
-                        time.sleep(1)
+                        time.sleep(10)
                     # 如果是其他问题就暂停
                     else:
                         print(e._message)
@@ -295,6 +360,20 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
                                 o = eval(command)
                                 print(o)
                         """
+        #
+        pred = pred.strip().lower()
+        if pred not in ["yes", "no"]:
+            logging.info(f"       prompt {pred_index} 在第{repeat_index}次重复时获得预测{pred}。结果非法。")
+        else:
+            validated_num += 1
+            if ((pred == "yes") & ground_truth):
+                true_num += 1
+                logging.info(f"       prompt {pred_index} 在第{repeat_index}次重复时获得预测{pred}。结果正确。")
+            elif ((pred == "no") & (not ground_truth)):
+                true_num += 1
+                logging.info(f"       prompt {pred_index} 在第{repeat_index}次重复时获得预测{pred}。结果正确。")
+            else:
+                logging.info(f"       prompt {pred_index} 在第{repeat_index}次重复时获得预测{pred}。结果错误。")
     return [true_num, validated_num, repeat_num]
 
 
@@ -316,10 +395,17 @@ def predicate(model_name, template_id, mention_pairs):
         #
         pred_index = 0
         #
+        topic_num_all = len(mention_pairs.keys())
+        topic_num_cur = 0
         for topic_id, topic_value in mention_pairs.items():
-            for cur_mention_pairs in topic_value:
+            logging.info(f"TOPIC: {topic_id} ({topic_num_cur}/{topic_num_all}) start ({datetime.datetime.now()})")
+            print(f"TOPIC: {topic_id} ({topic_num_cur}/{topic_num_all}) start ({datetime.datetime.now()})")
+            for cur_mention_pairs in tqdm(topic_value):
                 predicated_result = process_a_mention_pair(model_name, template_id, cur_mention_pairs[0], cur_mention_pairs[1])
                 cur_mention_pairs.append(predicated_result)
+            logging.info(f"TOPIC: {topic_id} ({topic_num_cur}/{topic_num_all}) end ({datetime.datetime.now()})")
+            print(f"TOPIC: {topic_id} ({topic_num_cur}/{topic_num_all}) end ({datetime.datetime.now()})")
+            topic_num_cur += 1
     elif type(first_value) is dict:  # mention_pairs是topic-doc-mentionPairs的嵌套结构
         #
         pred_index = 0
@@ -330,7 +416,9 @@ def predicate(model_name, template_id, mention_pairs):
                     predicated_result = process_a_mention_pair(model_name, template_id, cur_mention_pairs[0], cur_mention_pairs[1])
                     cur_mention_pairs.append(predicated_result)
     #
-    print("\n")
+    print(f"OUTPUT: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
+    logging.info(f"OUTPUT: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
+    config_dict["prompt_log_file"].close()
 
 
 def main():
@@ -338,15 +426,13 @@ def main():
     for cur_model_name, cur_model_config in config_dict["models"].items():
         for cur_template_id in config_dict["templates"]:
             # 针对当前model和当前template实验一次
-            logging.info(f"{datetime.datetime.now()}: Start {cur_model_name} model with template {cur_template_id}============================")
-            print(f"{datetime.datetime.now()}: Start {cur_model_name} model with template {cur_template_id}============================")
+            logging.info(f"============================\nStart {cur_model_name} model with template {cur_template_id} ({datetime.datetime.now()})")
+            print(f"============================\nStart {cur_model_name} model with template {cur_template_id} ({datetime.datetime.now()})")
             # read corpus
-            with open(config_dict["corpus_path"], 'rb') as f:
-                corpus = cPickle.load(f)
-            with open(config_dict["mention_pairs_path"], 'rb') as f:
-                mention_pairs = cPickle.load(f)
+            with open(config_dict["corpus_and_mention_pairs_path"], 'rb') as f:
+                corpus, mention_pairs = cPickle.load(f)
             #
-            strategy_id = re.search(r"test\(strategy([0-4])\).mp", config_dict["mention_pairs_path"]).groups()[0]
+            strategy_id = re.search(r"strategy([0-4])", config_dict["corpus_and_mention_pairs_path"]).groups()[0]
             # select a subset of the whole corpus
             if config_dict["data"] != "all":
                 topics_list = list(corpus.topics.keys())  # TODO: 知识点总结。如果不加list()，那么topics_list是会随着corpus的改变而改变的。
@@ -368,26 +454,18 @@ def main():
             pred_index = 0
             # 构建模型
             config_dict["models"][cur_model_name]["model_components"] = create_model(cur_model_name)
-            # 预测
+            # 预测+保存promptlog
             predicate(cur_model_name, cur_template_id, mention_pairs)
-            # 保存
-            corpus_path = rf"{config_dict['output_path']}\{config_dict['data']}.corpus"
-            if not os.path.exists(corpus_path):  # corpus保存一份就行了，因为这些实验共用同一份数据
-                with open(corpus_path, 'wb') as f:
-                    cPickle.dump(corpus, f)
-                    print(f"{datetime.datetime.now()}: corpus obj of {config_dict['data']} saved in {corpus_path}")
-                    logging.info(f"corpus obj of {config_dict['data']} saved in {corpus_path}")
-            os.path.exists(corpus_path)
-            # 保存
-            mention_pairs_path = rf"{config_dict['output_path']}\{config_dict['file_name']}.mp"
-            if os.path.exists(mention_pairs_path):
+            # 保存corpus和mp
+            path = os.path.join(config_dict['output_path'], f"{config_dict['file_name']}.c_mp")
+            if os.path.exists(path):
                 raise RuntimeError("重复的保存")
-            with open(mention_pairs_path, 'wb') as f:
-                cPickle.dump(mention_pairs, f)
-                print(f"{datetime.datetime.now()}: mention pairs list and pred result under cur config saved in {mention_pairs_path}")
-                logging.info(f"{datetime.datetime.now()}: mention pairs list and pred result under cur config saved in {mention_pairs_path}")
-            # 保存
-            mention_pairs_path = rf"{config_dict['output_path']}\{config_dict['file_name']}.csv"
+            with open(path, 'wb') as f:
+                cPickle.dump((corpus, mention_pairs), f)
+                print(f"OUTPUT: corpus and mention pairs list and pred result under cur config saved in {path}")
+                logging.info(f"OUTPUT: corpus and mention pairs list and pred result under cur config saved in {path}")
+            # 保存csv
+            path = os.path.join(config_dict['output_path'], f"{config_dict['file_name']}.csv")
             csv_list = []
             csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "label", cur_template_id])
             for cur_topic_id in mention_pairs.keys():
@@ -403,25 +481,21 @@ def main():
                         [true_num, validated_num, repeat_num]
                     ])
             csv_df = pd.DataFrame(csv_list)
-            csv_df.to_csv(mention_pairs_path, mode="a", encoding="utf-8", index=False, header=False)
-            print(f"{datetime.datetime.now()}: mention pairs csv under cur config saved in {mention_pairs_path}")
-            logging.info(f"{datetime.datetime.now()}: mention pairs csv under cur config saved in {mention_pairs_path}")
+            csv_df.to_csv(path, mode="a", encoding="utf-8", index=False, header=False)
+            print(f"OUTPUT: mention pairs csv under cur config saved in {path}")
+            logging.info(f"OUTPUT: mention pairs csv under cur config saved in {path}")
             # 销毁模型（释放内存）
             del config_dict["models"][cur_model_name]["model_components"]
             #
             del config_dict["file_name"]
-            print(f"{datetime.datetime.now()}: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
-            logging.info(f"{datetime.datetime.now()}: prompt log under cur config saved in {config_dict['prompt_log_file_path']}")
             del config_dict["prompt_log_file_path"]
-            config_dict["prompt_log_file"].close()
             del config_dict["prompt_log_file"]
-
-            #
             del config_dict["mention_pairs"]
             #
-            logging.info(f"{datetime.datetime.now()}: End")
-            print(f"{datetime.datetime.now()}: End")
+            logging.info(f"End {cur_model_name} model with template {cur_template_id} ({datetime.datetime.now()})\n======================================")
+            print(f"End {cur_model_name} model with template {cur_template_id} ({datetime.datetime.now()})\n======================================")
 
 
 if __name__ == '__main__':
     main()
+    print("\a")

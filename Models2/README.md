@@ -90,6 +90,7 @@
     * extract_mention_pairs_from_test_data.py 就是代码本身，用于保存配置。
      
 ## pred
+* 注册并购买OPENAI的API额度。把你的API key设为环境变量OPENAI_API_KEY。如果涉及多个组织或代理网络，在`src/3.pred.py: openai.proxy = "127.0.0.1:15732"`附近编辑相应代码。
 * 输入(在`src/extract_mention_pair_from_test_data.py`中的config_dict中配置)：
     * corpus_path: str: `src/1.read_corpus.py`输出的`test_data`文件的路径。
     * mention_pairs_path: 输`src/2.extract_mention_pairs_from_test_data.py`出的`test(strategy{1/2/3/4}).mp`的路径。

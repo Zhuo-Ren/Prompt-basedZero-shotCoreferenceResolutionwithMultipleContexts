@@ -61,7 +61,7 @@ elif len(os.listdir(config_dict["output_path"])) > 1:  # 大于1是因为上边�
 shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
 
 
-def save_mention_pairs(mention_pairs, strategy_id):
+def save_mention_pairs(corpus, mention_pairs, strategy_id):
     """
     把mention pairs保存成pkl和csv。
     其中csv内容类似::
@@ -103,17 +103,20 @@ def save_mention_pairs(mention_pairs, strategy_id):
             ...
         }
 
+    :param corpus:
     :param mention_pairs: [(mention_obj_1, mention_obj_2)]
     :param strategy_id: mention pair是基于哪个strategy生成的。这个信息只用于log。
     :return: no return
     """
+    data_name = os.path.join(config_dict["output_path"], os.path.basename(config_dict["corpus_path"]))
+    file_name = os.path.join(config_dict["output_path"], f"{data_name}(strategy{strategy_id})")
     # save pkl
-    path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).mp')
+    path = file_name + ".c_mp"
     with open(path, 'wb') as f:
-        cPickle.dump(mention_pairs, f)
-        print(f'strategy {strategy_id}: mention_pairs saved in {path}')
+        cPickle.dump((corpus, mention_pairs), f)
+        print(f'strategy {strategy_id}: corpus and mention_pairs saved in {path}')
     # save csv
-    path = os.path.join(config_dict["output_path"], f'test(strategy{strategy_id}).csv')
+    path = file_name + ".csv"
     csv_list = []
     csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "label"])
     first_value = list(mention_pairs.values())[0]
@@ -189,7 +192,7 @@ def strategy_1(corpus):
     print(f'strategy 1: {num_of_mention_pairs} mention pairs')
 
     # save
-    save_mention_pairs(mention_pairs, "1")
+    save_mention_pairs(corpus, mention_pairs, "1")
     return mention_pairs
 
 
@@ -229,7 +232,7 @@ def strategy_2(corpus):
     print(f'strategy 2: {num_of_mention_pairs} mention pairs')
 
     # save
-    save_mention_pairs(mention_pairs, "2")
+    save_mention_pairs(corpus, mention_pairs, "2")
     return mention_pairs
 
 
@@ -259,7 +262,7 @@ def strategy_3(corpus):
     print(f'strategy 3: {sum([len(mention_pairs[cur_topic_num]) for cur_topic_num in mention_pairs.keys()])} mention pairs')
 
     # save
-    save_mention_pairs(mention_pairs, "3")
+    save_mention_pairs(corpus, mention_pairs, "3")
     return mention_pairs
 
 
@@ -352,8 +355,9 @@ def main():
         ml3 = strategy_3(corpus=corpus)
     # elif config_dict["strategy"] == 4:
     #     strategy_4(corpus=corpus, predicted_topics=predicted_topics)
-    print("END")
 
+
+    print("END")
     #
     strategy_2_3_compatibility_check(ml2, ml3)
 
