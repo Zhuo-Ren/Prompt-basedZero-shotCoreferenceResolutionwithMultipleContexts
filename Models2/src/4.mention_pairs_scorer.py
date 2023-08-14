@@ -209,12 +209,12 @@ def save_into_csv_in_table_format(experiments_scores):
     for cur_data in result.keys():
         # 不同的data新开一个表，用单独的一行作为分隔
         writer.writerow({'template': cur_data})
-        for cur_template in result[data]:
+        for cur_template in result[cur_data]:
             # 写一行数据
             row = {'template': cur_template}
             for cur_model_setting in all_setting:
-                if cur_model_setting in result[data][cur_template]:
-                    row[cur_model_setting] = result[data][cur_template][cur_model_setting]
+                if cur_model_setting in result[cur_data][cur_template]:
+                    row[cur_model_setting] = result[cur_data][cur_template][cur_model_setting]
                 else:
                     row[cur_model_setting] = '-'
             writer.writerow(row)
@@ -238,23 +238,43 @@ def get_score_from_csv(input_path):
     for cur_csv_path in csv_file_list:
         # 1. 抽取配置
         experiment_settings = get_experiment_settings(cur_csv_path)
-        # 2. 读取csv
+        # 2.1. 另存并读取csv
+        shutil.copy(cur_csv_path, config_dict["output_path"])
         cur_df = pd.read_csv(cur_csv_path)
-        # 3.1. 计算合法结果占比
-        cur_result = cur_df[experiment_settings["template"]]
-        validated_num = cur_result.apply(
-            lambda x: ast.literal_eval(x)[1]
-        ).sum()
-        repeat_num = cur_result.apply(
-            lambda x: ast.literal_eval(x)[1]
-        ).sum()
-        Percentage_of_validated_result = validated_num / repeat_num
-        # 3.2. 计算性能指标
-        cur_prob = cur_result.apply(
-            lambda x: int(get_prob(ast.literal_eval(x)[0], ast.literal_eval(x)[1]) >= 0.5)
+        # 2.2. 准备工作
+        template_name = experiment_settings["template"]
+        cur_df["true_num"] = cur_df[template_name].apply(
+            lambda x: ast.literal_eval(x)[0]
         )
+        cur_df["valid_num"] = cur_df[template_name].apply(
+            lambda x: ast.literal_eval(x)[1]
+        )
+        cur_df["repeat_num"] = cur_df[template_name].apply(
+            lambda x: ast.literal_eval(x)[1]
+        )
+        def get_result(x):
+            label = x["label"]
+            true_num = x["true_num"]
+            validated_num = x["valid_num"]
+            if validated_num == 0:
+                return np.nan
+            else:
+                true_prob = true_num / validated_num
+                if true_prob >= 0.5:  # 做对了
+                    return label
+                else:  # 做错了
+                    return 1 - label  # label是1就返回0，label是0就返回1
+        cur_df["result"] = cur_df[["label", "true_num", "valid_num"]].apply(
+            get_result,
+            axis=1
+        )
+        # 3.1. 计算合法结果占比
+        valid_num_all = cur_df["valid_num"].sum()
+        repeat_num_all = cur_df["repeat_num"].sum()
+        Percentage_of_validated_result = valid_num_all / repeat_num_all
+        # 3.2. 计算性能指标
         performance_scores = get_metrics_scores(
-            cur_df["label"], cur_prob
+            cur_df["label"], cur_df["result"]
         )
         # 4. 记录
         cur_prompt_info = experiment_settings
