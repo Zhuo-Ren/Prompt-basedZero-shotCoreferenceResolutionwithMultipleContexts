@@ -51,19 +51,25 @@ config_dict = {
         #     "do_sample": False,
         #     "repeat": 1,
         # },
-        "ChatGPT3.5": {
-            "system_message": {
-                "role": "system",
-                "content": "You can only answer 'Yes' or 'No'."
-            },  # or None if you do not use system message
-            "model_config_desc": "b1t0",
-            "beam": 1,
-            "temperature": 0,
-            #
+        # "ChatGPT3.5": {
+        #     "system_message": {
+        #         "role": "system",
+        #         "content": "You can only answer 'Yes' or 'No'."
+        #     },  # or None if you do not use system message
+        #     "model_config_desc": "b1t0",
+        #     "beam": 1,
+        #     "temperature": 0,
+        #     #
+        #     "prefix_num": 0,
+        #     "do_sample": False,
+        #     "repeat": 1,
+        # },
+        "ground_truth_model": {
+            "model_config_desc": "none",
             "prefix_num": 0,
             "do_sample": False,
             "repeat": 1,
-        },
+        }
     },
     "templates": ["16DAM"],
     "data": ["36_ecb"]  # , "36_ecbplus"]  # "all"
@@ -330,7 +336,6 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
                     else:  # no sample
                         r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=m, temperature=0.0, max_tokens=1, timeout=10, request_timeout=10)
                     pred = r["choices"][0]["message"]["content"]
-                    # pred = "Yes"
                     break
                 except openai.OpenAIError as e:
                     # 如果是访问过快就等等
@@ -360,6 +365,8 @@ def process_a_mention_pair(model_name, template_id, mention1, mention2):
                                 o = eval(command)
                                 print(o)
                         """
+        elif model_name == "ground_truth_model":
+            pred = "Yes" if ground_truth else "No"
         #
         pred = pred.strip().lower()
         if pred not in ["yes", "no"]:
