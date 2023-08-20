@@ -21,37 +21,6 @@ import csv
 pass
 
 
-# config
-config_dict = {
-    "csv_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred",
-    "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
-}
-
-# 临时代码，用于清空输出路径
-for file in os.listdir(config_dict["output_path"]):
-    os.remove(os.path.join(config_dict["output_path"], file))
-
-# logging
-logging.basicConfig(
-    # 使用fileHandler,日志文件在输出路径中(test_log.txt)
-    filename=os.path.join(config_dict["output_path"], "log.txt"),
-    filemode="w",
-    # 配置日志级别
-    level=logging.INFO
-)
-print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
-
-# output dir
-if not os.path.exists(config_dict["output_path"]):
-    print(f"make output dir: {config_dict['output_path']}")
-    os.makedirs(config_dict["output_path"])
-elif len(os.listdir(config_dict["output_path"])) > 1:  # 大于1是因为上边配置logging的时候就建立的log.txt这个文件
-    input("output dir is not empty, press ENTER to continue.")
-
-# save this file itself
-shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
-
-
 METRICS = {
     "acc": accuracy_score,
     "precision": precision_score,
@@ -61,7 +30,44 @@ METRICS = {
 }
 
 
-pd.options.display.float_format = "{:,.2f}".format
+def get_cmp_or_csv_files(input_dir, with_cmp):
+    """
+    输入指定文件夹。定位文件夹中的csv文件（不迭代遍历）。
+    如果with_cmp为True，则还会检测是否每个csv文件都对应了c_mp文件。
+
+
+    :param input_dir:
+    :param with_cmp:
+    :return: list of str. 每个str是一个文件名，不包括后缀
+    """
+    # 获取路径下的所有csv文件的名字
+    dir_or_file_list = os.listdir(input_dir)
+    csv_file_list = []
+    for dir_or_file in dir_or_file_list:
+        if len(dir_or_file) <= 4:
+            continue
+        elif dir_or_file[-4:] != ".csv":
+            continue
+        cur_path = input_dir + "/" + dir_or_file
+        if os.path.isfile(cur_path):
+            csv_file_list.append(cur_path)
+    del dir_or_file_list, dir_or_file, cur_path
+    # csv文件和c_mp文件是配对的，检查是否每个csv都有配对的c_mp
+    experiment_list = []
+    for csv_file_path in csv_file_list:
+        file_name = csv_file_path[:-4]
+        if with_cmp:
+            cmp_file_path = f"{file_name}.c_mp"
+            if not os.path.exists(cmp_file_path):
+                raise RuntimeError(f"没有找到配对的c_mp文件：{cmp_file_path}")
+            else:
+                experiment_list.append(file_name)
+            del cmp_file_path
+        else:
+            experiment_list.append(file_name)
+        del csv_file_path
+    #
+    return experiment_list
 
 
 def get_prob(pred, count):
@@ -74,7 +80,7 @@ def get_prob(pred, count):
 
 def get_metrics_scores(
     groundtruth_column, pred_column,
-    metrics=METRICS,
+    metrics,
     threshold=0.5,
 ):
     """
@@ -131,8 +137,8 @@ def get_experiment_settings(csv_file_path):
     return r
 
 
-def save_into_csv_in_list_format(experiments_scores):
-    file_path = config_dict['output_path'] + "/performance_list.csv"
+def save_into_csv_in_list_format(experiments_scores, output_path):
+    file_path = output_path + "/scores_mp_list.csv"
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = [
         'data',
@@ -162,7 +168,7 @@ def save_into_csv_in_list_format(experiments_scores):
     print(f"结果输出到{file_path}")
 
 
-def save_into_csv_in_table_format(experiments_scores):
+def save_into_csv_in_table_format(experiments_scores, output_path):
     result = {}
     #
     all_data = set()
@@ -201,7 +207,7 @@ def save_into_csv_in_table_format(experiments_scores):
     all_setting = list(all_setting)
     all_template = list(all_template)
     #
-    file_path = config_dict['output_path'] + "/performance_table.csv"
+    file_path = output_path + "/scores_mp_table.csv"
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = ['template'] + all_setting
     writer = csv.DictWriter(csvfile, fieldnames=header)
@@ -221,77 +227,101 @@ def save_into_csv_in_table_format(experiments_scores):
     print(f"结果输出到{file_path}")
 
 
-def get_score_from_csv(input_path):
-    # 获取config_dict['csv_path']下的所有csv文件作为输入
-    dir_or_file_list = os.listdir(input_path)
-    csv_file_list = []
-    for dir_or_file in dir_or_file_list:
-        if len(dir_or_file) <= 4:
-            continue
-        elif dir_or_file[-4:] != ".csv":
-            continue
-        cur_path = input_path + "/" + dir_or_file
-        if os.path.isfile(cur_path):
-            csv_file_list.append(cur_path)
-    # 遍历所有csv文件
-    experiments_scores = []
-    for cur_csv_path in csv_file_list:
-        # 1. 抽取配置
-        experiment_settings = get_experiment_settings(cur_csv_path)
-        # 2.1. 另存并读取csv
-        shutil.copy(cur_csv_path, config_dict["output_path"])
-        cur_df = pd.read_csv(cur_csv_path)
-        # 2.2. 准备工作
-        template_name = experiment_settings["template"]
-        cur_df["true_num"] = cur_df[template_name].apply(
-            lambda x: ast.literal_eval(x)[0]
-        )
-        cur_df["valid_num"] = cur_df[template_name].apply(
-            lambda x: ast.literal_eval(x)[1]
-        )
-        cur_df["repeat_num"] = cur_df[template_name].apply(
-            lambda x: ast.literal_eval(x)[1]
-        )
-        def get_result(x):
-            label = x["label"]
-            true_num = x["true_num"]
-            validated_num = x["valid_num"]
-            if validated_num == 0:
-                return np.nan
-            else:
-                true_prob = true_num / validated_num
-                if true_prob >= 0.5:  # 做对了
-                    return label
-                else:  # 做错了
-                    return 1 - label  # label是1就返回0，label是0就返回1
-        cur_df["result"] = cur_df[["label", "true_num", "valid_num"]].apply(
-            get_result,
-            axis=1
-        )
-        # 3.1. 计算合法结果占比
-        valid_num_all = cur_df["valid_num"].sum()
-        repeat_num_all = cur_df["repeat_num"].sum()
-        Percentage_of_validated_result = valid_num_all / repeat_num_all
-        # 3.2. 计算性能指标
-        performance_scores = get_metrics_scores(
-            cur_df["label"], cur_df["result"]
-        )
-        # 4. 记录
-        cur_prompt_info = experiment_settings
-        cur_prompt_info["valid"] = Percentage_of_validated_result
-        cur_prompt_info.update(performance_scores)
-        #
-        experiments_scores.append(cur_prompt_info)
-    return experiments_scores
+def get_score_from_csv(csv_path):
+    # 1. 抽取配置
+    experiment_settings = get_experiment_settings(csv_path)
+    # 2.1. 读取csv
+    df = pd.read_csv(csv_path)
+    # 2.2. 准备工作
+    template_name = experiment_settings["template"]
+    df["true_num"] = df[template_name].apply(
+        lambda x: ast.literal_eval(x)[0]
+    )
+    df["valid_num"] = df[template_name].apply(
+        lambda x: ast.literal_eval(x)[1]
+    )
+    df["repeat_num"] = df[template_name].apply(
+        lambda x: ast.literal_eval(x)[1]
+    )
+    def get_result(x):
+        label = x["label"]
+        true_num = x["true_num"]
+        validated_num = x["valid_num"]
+        if validated_num == 0:
+            return np.nan
+        else:
+            true_prob = true_num / validated_num
+            if true_prob >= 0.5:  # 做对了
+                return label
+            else:  # 做错了
+                return 1 - label  # label是1就返回0，label是0就返回1
+    df["result"] = df[["label", "true_num", "valid_num"]].apply(
+        get_result,
+        axis=1
+    )
+    # 3.1. 计算合法结果占比
+    valid_num_all = df["valid_num"].sum()
+    repeat_num_all = df["repeat_num"].sum()
+    Percentage_of_validated_result = valid_num_all / repeat_num_all
+    # 3.2. 计算性能指标
+    performance_scores = get_metrics_scores(
+        df["label"], df["result"], metrics=METRICS
+    )
+    # 4. 记录
+    scores = experiment_settings
+    scores["valid"] = Percentage_of_validated_result
+    scores.update(performance_scores)
+    #
+    return scores
 
 
 def main():
+    # config
+    config_dict = {
+        "csv_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred",
+        "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
+    }
+    # 临时代码，用于清空输出路径
+    shutil.rmtree(config_dict["output_path"])
+    # output dir
+    if not os.path.exists(config_dict["output_path"]):
+        print(f"make output dir: {config_dict['output_path']}")
+        os.makedirs(config_dict["output_path"])
+    elif len(os.listdir(config_dict["output_path"])) > 0:
+        input("output dir is not empty, press ENTER to continue.")
+    # logging
+    logging.basicConfig(
+        handlers=[logging.FileHandler(
+            filename=os.path.join(config_dict["output_path"], "log.txt"),
+            encoding='utf-8',
+            mode='w'
+        )],
+        # 使用fileHandler,日志文件在输出路径中(test_log.txt)
+        # 配置日志级别
+        level=logging.INFO
+    )
+    print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
+    logging.info(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
+    # save this file itself
+    shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
     #
-    experiments_scores = get_score_from_csv(config_dict['csv_path'])
-    # save into csv
-    save_into_csv_in_list_format(experiments_scores)
-    save_into_csv_in_table_format(experiments_scores)
+    pd.options.display.float_format = "{:,.2f}".format
 
+    #
+    experiment_path_list = get_cmp_or_csv_files(config_dict["csv_path"], with_cmp=False)
+
+    # 1. mention pair部分
+    experiments_scores = []
+    for cur_experiment_path in experiment_path_list:
+        cur_csv_path = f"{cur_experiment_path}.csv"
+        # 打分
+        mention_pair_scores = get_score_from_csv(csv_path=cur_csv_path)
+        # 保存
+        shutil.copy(cur_csv_path, config_dict["output_path"])
+        # 分数整合
+        experiments_scores.append(mention_pair_scores)
+    save_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
+    save_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
 
 if __name__ == '__main__':
     main()
