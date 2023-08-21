@@ -123,7 +123,7 @@ def get_experiment_settings(csv_file_path):
     :return: 抽取的配置信息
     """
     csv_file_name = os.path.basename(csv_file_path)
-    groups = re.match(r'(\[[\S ]*\]\(strategy[0-4]\))_([\S]*)\(([\S]*)\)_([0-9])shot_t([^_]*)_(\S*)\(r([0-9])\).csv', csv_file_name).groups()
+    groups = re.match(r'(\[[\S ]*\]\(strategy[0-4]\))_([\S]*)\(([\S]*)\)_([0-9])shot_t([^_]*)_(\S*)\(r([0-9])\).[\S]*', csv_file_name).groups()
     #
     r = {}
     r["data"] = groups[0]
@@ -137,8 +137,9 @@ def get_experiment_settings(csv_file_path):
     return r
 
 
-def save_into_csv_in_list_format(experiments_scores, output_path):
-    file_path = output_path + "/scores_mp_list.csv"
+def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path):
+    suffix = "/scores_mp_list.csv"
+    file_path = output_path + suffix
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = [
         'data',
@@ -165,10 +166,10 @@ def save_into_csv_in_list_format(experiments_scores, output_path):
             'r': cur_experiment_score['recall'],
             'F1': cur_experiment_score['f1']
         })
-    print(f"结果输出到{file_path}")
+    print(f"OUTPUT: {suffix}输出到{file_path}")
 
 
-def save_into_csv_in_table_format(experiments_scores, output_path):
+def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path):
     result = {}
     #
     all_data = set()
@@ -207,7 +208,8 @@ def save_into_csv_in_table_format(experiments_scores, output_path):
     all_setting = list(all_setting)
     all_template = list(all_template)
     #
-    file_path = output_path + "/scores_mp_table.csv"
+    suffix = "/scores_mp_table.csv"
+    file_path = output_path + suffix
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = ['template'] + all_setting
     writer = csv.DictWriter(csvfile, fieldnames=header)
@@ -224,7 +226,7 @@ def save_into_csv_in_table_format(experiments_scores, output_path):
                 else:
                     row[cur_model_setting] = '-'
             writer.writerow(row)
-    print(f"结果输出到{file_path}")
+    print(f"OUTPUT: {suffix}输出到{file_path}")
 
 
 def get_score_from_csv(csv_path):
@@ -320,8 +322,8 @@ def main():
         shutil.copy(cur_csv_path, config_dict["output_path"])
         # 分数整合
         experiments_scores.append(mention_pair_scores)
-    save_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
-    save_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
+    save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
+    save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
 
 if __name__ == '__main__':
     main()

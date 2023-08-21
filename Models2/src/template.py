@@ -83,16 +83,16 @@ Text: < [S_CONTEXT] >
 Mention1: < [MENTION1] >
 Mention2: < [MENTION2] >
 Answer:""",
-    "14DAM": """In a given text, one mention is marked by <mention1></mention1> label, and another mention is marked by <mention2></mention2> label. Please determine whether two mentions are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+    "15DAM": """You will be given one or two messages (if there are two, they are separated by $$). In the given messages, two mentions are marked by <mention></mention> label. Please determine whether two mentions are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of anther mention, the two mentions don't co-referred.
 Use the following format:
-Text: < the given text with two mentions marked >
+Text: < the given messages with two mentions marked >
 Answer: < Yes or No, why >
 
 Text: < [D_CONTEXT_marked] >
 Answer:""",
-    "15DAM": """In a given text, two mentions are marked by <mention></mention> label. Please determine whether two mentions are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred.
+    "16DAM": """You will be given one or two messages (if there are two, they are separated by $$). In the given messages, two mentions are marked by <mention></mention> label. Please determine whether two mentions are co-referred. Two mentions are co-referred only when they are refer to the identical entity or event. Note that if a mention is a side, a part, a view or a aspect of anther mention, the two mentions don't co-referred. Note that entity mention and event mention can not be coreferred.
 Use the following format:
-Text: < the given text with two mentions marked >
+Text: < the given messages with two mentions marked >
 Answer: < Yes or No, why >
 
 Text: < [D_CONTEXT_marked] >
