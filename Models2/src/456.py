@@ -115,7 +115,12 @@ def main():
         # cd聚类
         for cur_topic_id, cur_topic_mp in mention_pairs.items():
             adapter_of_mention_pairs(cur_topic_mp)
-            clustering(cur_topic_id, cur_topic_mp)
+            #
+            n = int(re.search("([0-9]*)_ecb", cur_topic_id).groups()[0])
+            p = 1 if "plus" in cur_topic_id else 0
+            prefix = n*100000000 + p*1000000
+            #
+            clustering(prefix=prefix, mention_pairs_list=cur_topic_mp)
         remove_unselected_mention(corpus)
         check_whether_all_mentions_are_clustered(corpus)
         # 保存聚类结果
