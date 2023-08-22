@@ -137,9 +137,8 @@ def get_experiment_settings(csv_file_path):
     return r
 
 
-def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path):
-    suffix = "/scores_mp_list.csv"
-    file_path = output_path + suffix
+def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path, suffix="scores_mp_list.csv"):
+    file_path = os.path.join(output_path, suffix)
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = [
         'data',
@@ -169,7 +168,7 @@ def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_
     print(f"OUTPUT: {suffix}输出到{file_path}")
 
 
-def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path):
+def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path, suffix="scores_mp_table.csv"):
     result = {}
     #
     all_data = set()
@@ -184,12 +183,12 @@ def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output
         sample = cur_experiment_score['sample']
         repeat = cur_experiment_score['repeat']
         setting = f"{model_name}({model_config})_{prefix_num}shot_{sample}(r{repeat})"
-        valid = f"{round(cur_experiment_score['valid'], 2):.2f}"
-        acc = f"{round(cur_experiment_score['acc'], 2):.2f}"
-        auc = f"{round(cur_experiment_score['auc'], 2):.2f}"
-        p = f"{round(cur_experiment_score['precision'], 2):.2f}"
-        r = f"{round(cur_experiment_score['recall'], 2):.2f}"
-        f1 = f"{round(cur_experiment_score['f1'], 2):.2f}"
+        valid = f"{round(cur_experiment_score['valid']*100, 1):.1f}"
+        acc = f"{round(cur_experiment_score['acc']*100, 1):.1f}"
+        auc = f"{round(cur_experiment_score['auc']*100, 1):.1f}"
+        p = f"{round(cur_experiment_score['precision']*100, 1):.1f}"
+        r = f"{round(cur_experiment_score['recall']*100, 1):.1f}"
+        f1 = f"{round(cur_experiment_score['f1']*100, 1):.1f}"
         #
         all_data.add(data)
         all_setting.add(setting)
@@ -202,14 +201,13 @@ def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output
         if setting not in result[data][template]:
             result[data][template][setting] = ""
         #
-        result[data][template][setting] = f"v{valid}acc{acc}auc{auc}p{p}r{r}f1{f1}"
+        result[data][template][setting] = f"v:{valid}%;acc:{acc}%;auc:{auc}%;p:{p}%;r:{r}%;f1:{f1}%"
     #
     all_data = list(all_data)
     all_setting = list(all_setting)
     all_template = list(all_template)
     #
-    suffix = "/scores_mp_table.csv"
-    file_path = output_path + suffix
+    file_path = os.path.join(output_path, suffix)
     csvfile = open(file_path, mode="w", newline='', encoding='utf-8')
     header = ['template'] + all_setting
     writer = csv.DictWriter(csvfile, fieldnames=header)
@@ -229,11 +227,12 @@ def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output
     print(f"OUTPUT: {suffix}输出到{file_path}")
 
 
-def get_score_from_csv(csv_path):
+def mp_socrer(csv_path, cd=True):
     # 1. 抽取配置
     experiment_settings = get_experiment_settings(csv_path)
     # 2.1. 读取csv
     df = pd.read_csv(csv_path)
+    df = df[df["wd/cd"] == "wd"]
     # 2.2. 准备工作
     template_name = experiment_settings["template"]
     df["true_num"] = df[template_name].apply(
@@ -317,7 +316,7 @@ def main():
     for cur_experiment_path in experiment_path_list:
         cur_csv_path = f"{cur_experiment_path}.csv"
         # 打分
-        mention_pair_scores = get_score_from_csv(csv_path=cur_csv_path)
+        mention_pair_scores = mp_socrer(csv_path=cur_csv_path)
         # 保存
         shutil.copy(cur_csv_path, config_dict["output_path"])
         # 分数整合

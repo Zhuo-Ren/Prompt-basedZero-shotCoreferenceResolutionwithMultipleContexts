@@ -20,47 +20,12 @@ import csv
 
 from classes import Corpus, Topic, Document, Sentence, Token, Mention, EventMention, EntityMention, MentionData
 # 本地库
-from th4_mention_pairs_scorer import get_cmp_or_csv_files, get_score_from_csv, save_mention_pair_scores_into_csv_in_list_format, save_mention_pair_scores_into_csv_in_table_format, get_experiment_settings
+from th4_mention_pairs_scorer import get_cmp_or_csv_files, mp_socrer, save_mention_pair_scores_into_csv_in_list_format, save_mention_pair_scores_into_csv_in_table_format, get_experiment_settings
 from th5_clustering import adapter_of_mention_pairs, cd_clustering, wd_clustering, remove_unselected_mention, check_whether_all_mentions_are_clustered
 from th6_clustering_scorer import coreference_scorer, save_clustering_scores_into_csv_in_list_format, save_clustering_scores_into_csv_in_table_format
 
 
-def main():
-    # config
-    config_dict = {
-        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred",
-        "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
-    }
-    # 临时代码，用于清空输出路径
-    shutil.rmtree(config_dict["output_path"])
-    # output dir
-    if not os.path.exists(config_dict["output_path"]):
-        print(f"make output dir: {config_dict['output_path']}")
-        os.makedirs(config_dict["output_path"])
-    elif len(os.listdir(config_dict["output_path"])) > 0:
-        input("output dir is not empty, press ENTER to continue.")
-    # logging
-    logging.basicConfig(
-        handlers=[logging.FileHandler(
-            filename=os.path.join(config_dict["output_path"], "log.txt"),
-            encoding='utf-8',
-            mode='w'
-        )],
-        # 使用fileHandler,日志文件在输出路径中(test_log.txt)
-        # 配置日志级别
-        level=logging.INFO
-    )
-    print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
-    logging.info(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
-    # save this file itself
-    shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
-    #
-    pd.options.display.float_format = "{:,.2f}".format
-
-    #
-    experiment_path_list = get_cmp_or_csv_files(config_dict["input_path"], with_cmp=False)
-
-    # 1. mention pair部分
+def wd_mp(experiment_path_list, config_dict):
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"\n{'='*(19+len(os.path.basename(cur_experiment_path)))}\n"
@@ -76,27 +41,75 @@ def main():
         # 抽取配置
         settings = get_experiment_settings(cur_csv_path)
         # 打分
-        scores = get_score_from_csv(csv_path=cur_csv_path)
+        scores = mp_socrer(csv_path=cur_csv_path, cd=False)
         # 保存分数
-        path = os.path.join(config_dict['output_path'], f"{os.path.basename(cur_experiment_path)}.mp.scores")
+        path = os.path.join(config_dict['output_path'], f"{os.path.basename(cur_experiment_path)}.wd_mp.scores")
         with open(path, 'w', encoding="utf8") as f:
             f.writelines([f"{k}: {v}\n" for k, v in scores.items()])
-        print(f"OUTPUT: mention pairs scores saved in {path}")
-        logging.info(f"OUTPUT: mention pairs scores saved in {path}")
+        print(f"OUTPUT: wd mention pairs scores saved in {path}")
+        logging.info(f"OUTPUT: wd mention pairs scores saved in {path}")
         # 分数整合
         info = {}
         info.update(settings)
         info.update(scores)
         experiments_scores.append(info)
-    print(f"\n=======================\n"
-          f"===Mention Pair:整合===\n"
-          f"=======================")
-    logging.info(f"\n=======================\n"
-                 f"===Mention Pair:整合===\n"
-                 f"=======================")
-    save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
-    save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
-    # 2.wd coref部分
+    print(f"\n==========================\n"
+          f"===WD Mention Pair:整合===\n"
+          f"==========================")
+    logging.info(f"\n==========================\n"
+                 f"===WD Mention Pair:整合===\n"
+                 f"==========================")
+    save_mention_pair_scores_into_csv_in_list_format(
+        experiments_scores,
+        output_path=config_dict["output_path"], suffix="scores_wd_mp_list.csv")
+    save_mention_pair_scores_into_csv_in_table_format(
+        experiments_scores,
+        output_path=config_dict["output_path"], suffix="scores_wd_mp_table.csv")
+
+
+def cd_mp(experiment_path_list, config_dict):
+    experiments_scores = []
+    for cur_experiment_path in experiment_path_list:
+        print(f"\n{'='*(19+len(os.path.basename(cur_experiment_path)))}\n"
+              f"===Mention Pair:{os.path.basename(cur_experiment_path)}===\n"
+              f"{'='*(19+len(os.path.basename(cur_experiment_path)))}")
+        logging.info(f"\n{'='*(19+len(os.path.basename(cur_experiment_path)))}\n"
+                     f"===Mention Pair:{os.path.basename(cur_experiment_path)}===\n"
+                     f"{'='*(19+len(os.path.basename(cur_experiment_path)))}")
+        #
+        cur_csv_path = f"{cur_experiment_path}.csv"
+        # 保存
+        shutil.copy(cur_csv_path, config_dict["output_path"])
+        # 抽取配置
+        settings = get_experiment_settings(cur_csv_path)
+        # 打分
+        scores = mp_socrer(csv_path=cur_csv_path, cd=True)
+        # 保存分数
+        path = os.path.join(config_dict['output_path'], f"{os.path.basename(cur_experiment_path)}.cd_mp.scores")
+        with open(path, 'w', encoding="utf8") as f:
+            f.writelines([f"{k}: {v}\n" for k, v in scores.items()])
+        print(f"OUTPUT: cd mention pairs scores saved in {path}")
+        logging.info(f"OUTPUT: cd mention pairs scores saved in {path}")
+        # 分数整合
+        info = {}
+        info.update(settings)
+        info.update(scores)
+        experiments_scores.append(info)
+    print(f"\n==========================\n"
+          f"===CD Mention Pair:整合===\n"
+          f"==========================")
+    logging.info(f"\n==========================\n"
+                 f"===CD Mention Pair:整合===\n"
+                 f"==========================")
+    save_mention_pair_scores_into_csv_in_list_format(
+        experiments_scores,
+        output_path=config_dict["output_path"], suffix="scores_cd_mp_list.csv")
+    save_mention_pair_scores_into_csv_in_table_format(
+        experiments_scores,
+        output_path=config_dict["output_path"], suffix="scores_cd_mp_table.csv")
+
+
+def wd_coref(experiment_path_list, config_dict):
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"\n{'=' * (19 + len(os.path.basename(cur_experiment_path)))}\n"
@@ -167,7 +180,9 @@ def main():
     save_clustering_scores_into_csv_in_table_format(experiments_scores,
                                                     output_path=config_dict["output_path"],
                                                     suffix="scores_wd_clustering_table.csv")
-    # 3.cd coref部分
+
+
+def cd_coref(experiment_path_list, config_dict):
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"\n{'='*(19+len(os.path.basename(cur_experiment_path)))}\n"
@@ -226,6 +241,48 @@ def main():
     save_clustering_scores_into_csv_in_table_format(experiments_scores,
                                                     output_path=config_dict["output_path"],
                                                     suffix="scores_cd_clustering_table.csv")
+
+
+def main():
+    # config
+    config_dict = {
+        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred",
+        "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
+    }
+    # 临时代码，用于清空输出路径
+    shutil.rmtree(config_dict["output_path"])
+    # output dir
+    if not os.path.exists(config_dict["output_path"]):
+        print(f"make output dir: {config_dict['output_path']}")
+        os.makedirs(config_dict["output_path"])
+    elif len(os.listdir(config_dict["output_path"])) > 0:
+        input("output dir is not empty, press ENTER to continue.")
+    # logging
+    logging.basicConfig(
+        handlers=[logging.FileHandler(
+            filename=os.path.join(config_dict["output_path"], "log.txt"),
+            encoding='utf-8',
+            mode='w'
+        )],
+        # 使用fileHandler,日志文件在输出路径中(test_log.txt)
+        # 配置日志级别
+        level=logging.INFO
+    )
+    print(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
+    logging.info(f"log saved in {os.path.join(config_dict['output_path'], 'log.txt')}")
+    # save this file itself
+    shutil.copy(os.path.abspath(__file__), config_dict["output_path"])
+    #
+    pd.options.display.float_format = "{:,.2f}".format
+
+    #
+    experiment_path_list = get_cmp_or_csv_files(config_dict["input_path"], with_cmp=False)
+
+    #
+    wd_mp(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    cd_mp(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    wd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
 
 
 if __name__ == '__main__':
