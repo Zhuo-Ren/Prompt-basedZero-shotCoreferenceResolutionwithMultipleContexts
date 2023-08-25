@@ -1,0 +1,9 @@
+prompt_type,0-shot,2-shot,4-shot,10-shot
+GPT2,,,,
+prompt 1,0.1107,-,-,-
+prompt 2,0.0744,-,-,-
+prompt 3,0.0185,-,-,-
+prompt 4,0.1014,-,-,-
+prompt 5,0.0792,-,-,-
+prompt majority,0.0313,-,-,-
+prompt mean,0.1259,-,-,-

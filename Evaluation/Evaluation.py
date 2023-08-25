@@ -61,7 +61,7 @@ labels = [  # 总共可选的labels
     # "GPT2_WSC",
 ]
 
-prompt_num = 7
+prompt_num = 5
 
 # ####################################################################
 # Utils for Charts ###################################################
@@ -171,7 +171,7 @@ def get_metrics_scores(
     """
     groundtruth = df["label"].values
     metrics_of_all_prompt_types = {}
-    prompt_types = ["prompt 1", "prompt 2", "prompt 3", "prompt 4", "prompt 5", "prompt 6", "prompt 7", "prompt majority", "prompt mean"]
+    prompt_types = ["prompt 1", "prompt 2", "prompt 3", "prompt 4", "prompt 5", "prompt majority", "prompt mean"]
     for cur_prompt_type in prompt_types:
         cur_prompt = df[cur_prompt_type].values
         cur_prompt_metrics = {}
@@ -186,7 +186,7 @@ def get_metrics_scores(
 # ####################################################################
 def get_experiment_settings(csv_file_path):
     csv_file_name = os.path.basename(csv_file_path)
-    groups = re.match(r'([\S]*)_gold_mentions_([\S]*)_shot([\d]{1,2})([\S]*)_beam([\d])_([\S]{2})Sample\(t([\d\.])+r([\d])\).csv', csv_file_name).groups()
+    groups = re.match(r'([\S]*)(_)gold_mentions_shot([\d]{1,2})([\S]*)_beam([\d])_([\S]{2})Sample\(t([\d\.])+r([\d])\).csv', csv_file_name).groups()
     #
     r = {}
     r["model"] = groups[0]
