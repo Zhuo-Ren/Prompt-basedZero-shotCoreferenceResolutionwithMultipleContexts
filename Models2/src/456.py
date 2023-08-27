@@ -26,6 +26,37 @@ from th6_clustering_scorer import coreference_scorer, save_clustering_scores_int
 
 
 def mp_target(experiment_path_list, config_dict, target_type):
+    """
+    给定csv文件，对指定部分做mention pairs打分。
+
+    experiment_path_list就是一系列csv文件路径组成的列表（这里的路径没有.csv后缀）::
+
+        experiment_path_list = [
+            "some_path/['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t17MAU_noSample(r1)",
+            "some_path/['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t18MAU_noSample(r1)",
+        ]
+
+    读取csv后，里边是一系列mention pair以及模型对其的预测结果。
+
+    target_type对csv中的mention pair取子集：
+        * target_type = "2s"就是只选取mention 1和mention 2处于同一句或前后句的mention pair。
+        * target_type = "wd-"就是只选取文档内mention pair，但刨去了"2s"的部分
+        * target_type = "wd+"就是只选取文档内mention pair（什么都不刨去）
+        * target_type = "cd-"就是选取所有mention pair，但刨去了"wd+"的部分
+        * target_type = "cd+"就是选取所有mention pair（什么都不刨去）
+
+    graph::
+
+        |__2s__|__wd-__|__cd-__|
+        |XXXXXX|XXXXXXX|XXXXXXX|   ← all the mention pairs in csv file
+        |_____wd+______|       |
+        |__________cd+_________|
+
+    :param experiment_path_list: A list of path of CSV file. (path with out .csv suffix)
+    :param config_dict:
+    :param target_type: Take which part of mention pairs in CSV file.
+    :return: No return. 对experiment_path_list中的每个csv，程序保存一个打分结果。对所有csv，再保存两个总结的打分结果表。
+    """
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"==={target_type} Mention Pair:{os.path.basename(cur_experiment_path)}===")
