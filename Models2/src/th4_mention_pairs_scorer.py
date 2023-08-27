@@ -33,12 +33,21 @@ METRICS = {
 def get_cmp_or_csv_files(input_dir, with_cmp):
     """
     输入指定文件夹。定位文件夹中的csv文件（不迭代遍历）。
-    如果with_cmp为True，则还会检测是否每个csv文件都对应了c_mp文件。
+    如果with_cmp为True，则还会检测是否每个csv文件都对应了c_mp文件。如果有任一一个csv但没有对应的c_mp文件，则raise RuntimeError。
 
+    example::
+
+            >>> input_path = 'E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred'
+            >>> get_cmp_or_csv_files(input_path, with_cmp=False)
+            [
+                "E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred/['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)",
+                "E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred/['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t16DAM_noSample(r1)",
+                "E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred/['36_ecb'](strategy3)_ground_truth_model(none)_0shot_t16DAM_noSample(r1)"
+            ]
 
     :param input_dir:
-    :param with_cmp:
-    :return: list of str. 每个str是一个文件名，不包括后缀
+    :param with_cmp: 如果with_cmp为True，则还会检测是否每个csv文件都对应了c_mp文件。
+    :return: list of str. 指定路径下的CSV文件列表（不含.csv这个后缀）。
     """
     # 获取路径下的所有csv文件的名字
     dir_or_file_list = os.listdir(input_dir)
@@ -106,7 +115,10 @@ def get_metrics_scores(
     """
     cur_prompt_metrics = {}
     for cur_metirc_name, cur_metirc_scorer in metrics.items():
-        cur_prompt_metrics[cur_metirc_name] = cur_metirc_scorer(groundtruth_column, pred_column)
+        if len(groundtruth_column) != 0:
+            cur_prompt_metrics[cur_metirc_name] = cur_metirc_scorer(groundtruth_column, pred_column)
+        else:
+            cur_prompt_metrics[cur_metirc_name] = -1
     return cur_prompt_metrics
 
 
@@ -227,14 +239,17 @@ def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output
     print(f"OUTPUT: {suffix}输出到{file_path}")
 
 
-def mp_socrer(csv_path, cd=True):
-    # 1. 抽取配置
-    experiment_settings = get_experiment_settings(csv_path)
+def mp_scorer_csv(csv_path, template_name):
     # 2.1. 读取csv
     df = pd.read_csv(csv_path)
     df = df[df["wd/cd"] == "wd"]
+    #
+    s = mp_scorer_df(df, template_name)
+    return s
+
+
+def mp_scorer_df(df, template_name):
     # 2.2. 准备工作
-    template_name = experiment_settings["template"]
     df["true_num"] = df[template_name].apply(
         lambda x: ast.literal_eval(x)[0]
     )
@@ -263,14 +278,14 @@ def mp_socrer(csv_path, cd=True):
     # 3.1. 计算合法结果占比
     valid_num_all = df["valid_num"].sum()
     repeat_num_all = df["repeat_num"].sum()
-    Percentage_of_validated_result = valid_num_all / repeat_num_all
+    percentage_of_validated_result = (valid_num_all / repeat_num_all) if len(df) != 0 else -1
     # 3.2. 计算性能指标
     performance_scores = get_metrics_scores(
         df["label"], df["result"], metrics=METRICS
     )
     # 4. 记录
-    scores = experiment_settings
-    scores["valid"] = Percentage_of_validated_result
+    scores = {}
+    scores["valid"] = percentage_of_validated_result
     scores.update(performance_scores)
     #
     return scores
@@ -323,6 +338,7 @@ def main():
         experiments_scores.append(mention_pair_scores)
     save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
     save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
+
 
 if __name__ == '__main__':
     main()

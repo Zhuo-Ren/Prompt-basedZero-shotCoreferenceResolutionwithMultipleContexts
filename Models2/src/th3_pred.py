@@ -51,27 +51,27 @@ config_dict = {
         #     "do_sample": False,
         #     "repeat": 1,
         # },
-        # "ChatGPT3.5": {
-        #     "system_message": {
-        #         "role": "system",
-        #         "content": "You can only answer 'Yes' or 'No'."
-        #     },  # or None if you do not use system message
-        #     "model_config_desc": "b1t0",
-        #     "beam": 1,
-        #     "temperature": 0,
-        #     #
-        #     "prefix_num": 0,
-        #     "do_sample": False,
-        #     "repeat": 1,
-        # },
-        "ground_truth_model": {
-            "model_config_desc": "none",
+        "ChatGPT3.5": {
+            "system_message": {
+                "role": "system",
+                "content": "You can only answer 'Yes' or 'No'."
+            },  # or None if you do not use system message
+            "model_config_desc": "b1t0",
+            "beam": 1,
+            "temperature": 0,
+            #
             "prefix_num": 0,
             "do_sample": False,
             "repeat": 1,
-        }
+        },
+        # "ground_truth_model": {
+        #     "model_config_desc": "none",
+        #     "prefix_num": 0,
+        #     "do_sample": False,
+        #     "repeat": 1,
+        # }
     },
-    "templates": ["16DAM"],
+    "templates": ["19SAU"],
     "data": ["36_ecb"]  # , "36_ecbplus"]  # "all"
 }
 
@@ -115,7 +115,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 
-def get_context(mention1, mention2, context_level="sentence", mark_mention=False, selected_sentence_only=True):
+def get_context(mention1, mention2,
+                context_level="sentence",
+                mark_mention=False, selected_sentence_only=True,
+                splitter=" $$"):
     """
 
     :param mention1:
@@ -123,6 +126,7 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
     :param context_level: "sent" or "doc"
     :param mark_mention:
     :param selected_sentence_only:
+    :param splitter: 如果context涉及不连续的内容，比如同文档中的离散句或跨文档的两个mention，就用splitter分割开。
     :return:
     """
     #
@@ -179,6 +183,31 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
                     mention2.doc_id, [mention2.sent_id]
                 ]
             ]
+    elif context_level == "middle":
+        if mention1.doc_id == mention2.doc_id:  # cd
+            if mention1.sent_id == mention2.sent_id:  # 同一句
+                target = [
+                    [
+                        mention1.doc_id, [mention1.sent_id]
+                    ]
+                ]
+            else:  # 不同句：输出两个所在句及其中间部分
+                t = sorted([mention1.sent_id, mention2.sent_id])
+                t[1] += 1
+                target = [
+                    [
+                        mention1.doc_id, list(range(*t))
+                    ]
+                ]
+        else:  # wd：分别输出两个所在句
+            target = [
+                [
+                    mention1.doc_id, [mention1.sent_id]
+                ],
+                [
+                    mention2.doc_id, [mention2.sent_id]
+                ]
+            ]
     # 根据目标文档、目标句来读取context
     context = ""
     for cur_target in target:
@@ -211,8 +240,8 @@ def get_context(mention1, mention2, context_level="sentence", mark_mention=False
                     config_dict["error_log"].write(f"End of sent error at {doc_id}-sent{cur_sent_index}:{cur_sent.tokens[-1].token}\n")
                     context += "."
         "END OF for cur_sent_index in sent_indexes"
-        context += " $$"  # 如果是多个文档，那么之间用此符号分割
-    context = context[:-2]
+        context += splitter  # 如果是多个文档，那么之间用此符号分割
+    context = context[:(-1*len(splitter))]  # 去掉最后的$$
     #
     context = context.strip()
     context = context.replace("`` ", "\"")
@@ -231,22 +260,25 @@ def make_prompt(template_index, mention1, mention2):
     mention1_str = mention1.mention_str
     mention2_str = mention2.mention_str
     # context with target mentions un-marked
-    """
-    context_sent_nomark_all = get_context(mention1, mention2, context_level="sent", mark_mention=False, selected_sentence_only=False)
-    context_doc_nomark_all = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=False)
-    context_doc_nomark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=True)
-    """
+    context_middle_nomark_all = get_context(mention1, mention2, context_level="middle", mark_mention=False, selected_sentence_only=False, splitter=" ")
+    context_sent_nomark_all = get_context(mention1, mention2, context_level="sent", mark_mention=False, selected_sentence_only=False, splitter=" ")
+    """context_doc_nomark_all = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=False, splitter=" ")"""
+    """context_doc_nomark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=True, splitter=" ")"""
     # context with target mentions marked by labels
-    # context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False)
-    context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False)
-    # context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True)
-    #
-    # template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
-    # template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)
-    # template = template.replace("[D_CONTEXT]", context_doc_nomark_all)
-    # template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)
+    """context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False, splitter=" ")"""
+    context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False, splitter=" ")
+    """context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True, splitter=" ")"""
+    # M_CONTEXT在wd时是两个mention所在句及其中间部分（middle，所以叫M）；在cd时就是两个所在句用$$分割。
+    template = template.replace("[M_CONTEXT]", context_middle_nomark_all)
+    # S_CONTEXT是所在句单独。如果wd且连续的1或2句，则现需输出；否则用$$分割。
+    template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
+    """template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)"""
+    # D_CONTEXT是从文档头到所在句。如果wd，则按较后的mention算所在句；如果cd，则分别计算context再用$$分割。
+    """template = template.replace("[D_CONTEXT]", context_doc_nomark_all)"""
+    """template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)"""
     template = template.replace("[D_CONTEXT_marked]", context_doc_mark_all)
-    # template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)
+    """template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)"""
+    #
     template = template.replace("[MENTION1]", mention1_str)
     template = template.replace("[MENTION2]", mention2_str)
     # template = template.strip()
@@ -419,7 +451,7 @@ def predicate(model_name, template_id, mention_pairs):
         #
         for topic_id, topic_value in mention_pairs.items():
             for doc_id, doc_value in topic_value.items():
-                for cur_mention_pairs in doc_value:
+                for cur_mention_pairs in tqdm(doc_value):
                     predicated_result = process_a_mention_pair(model_name, template_id, cur_mention_pairs[0], cur_mention_pairs[1])
                     cur_mention_pairs.append(predicated_result)
     #
@@ -475,18 +507,34 @@ def main():
             path = os.path.join(config_dict['output_path'], f"{config_dict['file_name']}.csv")
             csv_list = []
             csv_list.append(["topic", "m1_doc", "m1_sent", "m1_str", "m2_doc", "m2_sent", "m2_str", "wd/cd", "seq", "label", cur_template_id])
-            for cur_topic_id in mention_pairs.keys():
-                for mention1, mention2, [true_num, validated_num, repeat_num] in mention_pairs[cur_topic_id]:
-                    if_wd = (mention1.doc_id == mention2.doc_id)
-                    csv_list.append([
-                        cur_topic_id,
-                        mention1.doc_id, mention1.sent_id, mention1.mention_str,
-                        mention2.doc_id, mention2.sent_id, mention2.mention_str,
-                        "wd" if if_wd else "cd",
-                        abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
-                        1 if mention1.gold_tag == mention2.gold_tag else 0,
-                        [true_num, validated_num, repeat_num]
-                    ])
+            first_value = list(mention_pairs.values())[0]  # get the first value of mention_pairs
+            if type(first_value) is list:  # mention_pairs是topic-mentionPairs的嵌套结构
+                for cur_topic_id in mention_pairs.keys():
+                    for mention1, mention2, [true_num, validated_num, repeat_num] in mention_pairs[cur_topic_id]:
+                        if_wd = (mention1.doc_id == mention2.doc_id)
+                        csv_list.append([
+                            cur_topic_id,
+                            mention1.doc_id, mention1.sent_id, mention1.mention_str,
+                            mention2.doc_id, mention2.sent_id, mention2.mention_str,
+                            "wd" if if_wd else "cd",
+                            abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
+                            1 if mention1.gold_tag == mention2.gold_tag else 0,
+                            [true_num, validated_num, repeat_num]
+                        ])
+            elif type(first_value) is dict:  # mention_pairs是topic-doc-mentionPairs的嵌套结构
+                for cur_topic_id, cur_topic in mention_pairs.items():
+                    for cur_doc_id, cur_doc in cur_topic.items():
+                        for mention1, mention2, [true_num, validated_num, repeat_num] in cur_doc:
+                            if_wd = (mention1.doc_id == mention2.doc_id)
+                            csv_list.append([
+                                cur_topic_id,
+                                mention1.doc_id, mention1.sent_id, mention1.mention_str,
+                                mention2.doc_id, mention2.sent_id, mention2.mention_str,
+                                "wd" if if_wd else "cd",
+                                abs(mention1.sent_id - mention2.sent_id) if if_wd else None,
+                                1 if mention1.gold_tag == mention2.gold_tag else 0,
+                                [true_num, validated_num, repeat_num]
+                            ])
             csv_df = pd.DataFrame(csv_list)
             csv_df.to_csv(path, mode="a", encoding="utf-8", index=False, header=False)
             print(f"OUTPUT: mention pairs csv under cur config saved in {path}")
