@@ -71,7 +71,7 @@ config_dict = {
         #     "repeat": 1,
         # }
     },
-    "templates": ["19SAU"],
+    "templates": ["25DAU"],
     "data": ["36_ecb"]  # , "36_ecbplus"]  # "all"
 }
 
@@ -259,25 +259,30 @@ def make_prompt(template_index, mention1, mention2):
     #
     mention1_str = mention1.mention_str
     mention2_str = mention2.mention_str
-    # context with target mentions un-marked
-    context_middle_nomark_all = get_context(mention1, mention2, context_level="middle", mark_mention=False, selected_sentence_only=False, splitter=" ")
-    context_sent_nomark_all = get_context(mention1, mention2, context_level="sent", mark_mention=False, selected_sentence_only=False, splitter=" ")
-    """context_doc_nomark_all = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=False, splitter=" ")"""
-    """context_doc_nomark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=True, splitter=" ")"""
-    # context with target mentions marked by labels
-    """context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False, splitter=" ")"""
-    context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False, splitter=" ")
-    """context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True, splitter=" ")"""
     # M_CONTEXT在wd时是两个mention所在句及其中间部分（middle，所以叫M）；在cd时就是两个所在句用$$分割。
-    template = template.replace("[M_CONTEXT]", context_middle_nomark_all)
+    if "M_CONTEXT" in template:
+        context_middle_nomark_all = get_context(mention1, mention2, context_level="middle", mark_mention=False, selected_sentence_only=False, splitter=" ")
+        template = template.replace("[M_CONTEXT]", context_middle_nomark_all)
     # S_CONTEXT是所在句单独。如果wd且连续的1或2句，则现需输出；否则用$$分割。
-    template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
-    """template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)"""
+    if "S_CONTEXT" in template:
+        context_sent_nomark_all = get_context(mention1, mention2, context_level="sent", mark_mention=False, selected_sentence_only=False, splitter=" ")
+        template = template.replace("[S_CONTEXT]", context_sent_nomark_all)
+    if "S_CONTEXT_marked" in template:
+        context_sent_mark_all = get_context(mention1, mention2, context_level="sent", mark_mention=True, selected_sentence_only=False, splitter=" ")
+        template = template.replace("[S_CONTEXT_marked]", context_sent_mark_all)
     # D_CONTEXT是从文档头到所在句。如果wd，则按较后的mention算所在句；如果cd，则分别计算context再用$$分割。
-    """template = template.replace("[D_CONTEXT]", context_doc_nomark_all)"""
-    """template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)"""
-    template = template.replace("[D_CONTEXT_marked]", context_doc_mark_all)
-    """template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)"""
+    if "D_CONTEXT" in template:
+        context_doc_nomark_all = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=False, splitter=" ")
+        template = template.replace("[D_CONTEXT]", context_doc_nomark_all)
+    if "D_CONTEXT_marked" in template:
+        context_doc_nomark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=False, selected_sentence_only=True, splitter=" ")
+        template = template.replace("[D_CONTEXT_selected]", context_doc_nomark_selected)
+    if "D_CONTEXT_marked" in template:
+        context_doc_mark_all = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=False, splitter=" ")
+        template = template.replace("[D_CONTEXT_marked]", context_doc_mark_all)
+    if "D_CONTEXT_selected_marked" in template:
+        context_doc_mark_selected = get_context(mention1, mention2, context_level="doc", mark_mention=True, selected_sentence_only=True, splitter=" ")
+        template = template.replace("[D_CONTEXT_selected_marked]", context_doc_mark_selected)
     #
     template = template.replace("[MENTION1]", mention1_str)
     template = template.replace("[MENTION2]", mention2_str)
