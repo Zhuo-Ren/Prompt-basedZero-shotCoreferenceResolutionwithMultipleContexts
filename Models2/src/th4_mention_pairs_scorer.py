@@ -37,7 +37,7 @@ def get_cmp_or_csv_files(input_dir, with_cmp):
 
     example::
 
-            >>> input_path = 'E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred'
+            >>> input_path = r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data/3.pred"
             >>> get_cmp_or_csv_files(input_path, with_cmp=False)
             [
                 "E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred/['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)",
@@ -330,11 +330,14 @@ def main():
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         cur_csv_path = f"{cur_experiment_path}.csv"
+        # get setting
+        settings = get_experiment_settings(cur_csv_path)
         # 打分
-        mention_pair_scores = mp_socrer(csv_path=cur_csv_path)
+        mention_pair_scores = mp_scorer_csv(csv_path=cur_csv_path, template_name=settings["template"])
         # 保存
         shutil.copy(cur_csv_path, config_dict["output_path"])
         # 分数整合
+        mention_pair_scores.update(settings)
         experiments_scores.append(mention_pair_scores)
     save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_path=config_dict["output_path"])
     save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output_path=config_dict["output_path"])
