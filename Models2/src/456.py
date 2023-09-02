@@ -256,13 +256,7 @@ def cd_coref(experiment_path_list, config_dict):
                                                     suffix="scores_cd_clustering_table.csv")
 
 
-def main():
-    # config
-    config_dict = {
-        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred",
-        "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
-        "statistic_dict_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\statistics\statistic_dict.pkl"
-    }
+def main(config_dict):
     # 临时代码，用于清空输出路径
     shutil.rmtree(config_dict["output_path"])
     # output dir
@@ -303,4 +297,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # config
+    config_dict = {
+        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.mixture",
+        "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
+        "statistic_dict_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\statistics\statistic_dict.pkl"
+    }
+    main(config_dict)

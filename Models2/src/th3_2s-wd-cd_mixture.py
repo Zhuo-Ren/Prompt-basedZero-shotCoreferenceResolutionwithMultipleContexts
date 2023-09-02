@@ -19,6 +19,15 @@ def mixture_csv(ts_path, wd_path, cd_path, output_path):
     ts_rows = ts_df[ts_df["seq"] <= 1]
     wd_rows = wd_df[(wd_df["wd/cd"] == "wd") & (~wd_df["seq"].isin([0, 1]))]
     cd_rows = cd_df[cd_df["wd/cd"] == "cd"]
+    # 把最后一列的列名（template id）改为新的template id
+    ts_template_id = ts_rows.columns.to_list()[-1]
+    wd_template_id = wd_rows.columns.to_list()[-1]
+    cd_template_id = cd_rows.columns.to_list()[-1]
+    new_id = f"{ts_template_id}-{wd_template_id}-{cd_template_id}"
+    ts_rows = ts_rows.rename(columns={ts_template_id: new_id})
+    wd_rows = wd_rows.rename(columns={wd_template_id: new_id})
+    cd_rows = cd_rows.rename(columns={cd_template_id: new_id})
+    del ts_template_id, wd_template_id, cd_template_id, new_id
     #
     r = pd.concat([ts_rows, wd_rows, cd_rows])
     # 检查
@@ -26,6 +35,7 @@ def mixture_csv(ts_path, wd_path, cd_path, output_path):
     l2 = len(r)
     if l1 != l2:
         raise RuntimeError("xxxx")
+    del l1, l2
     # 保存
     r.to_csv(output_path, mode="a", encoding="utf-8", index=False, header=True)
     print(f"OUTPUT: csv saved in {output_path}")

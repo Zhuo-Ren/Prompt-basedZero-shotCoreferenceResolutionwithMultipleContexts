@@ -135,7 +135,7 @@ def get_experiment_settings(csv_file_path):
     :return: 抽取的配置信息
     """
     csv_file_name = os.path.basename(csv_file_path)
-    groups = re.match(r'(\[[\S ]*\]\(strategy[0-4]\))_([\S]*)\(([\S]*)\)_([0-9])shot_t([^_]*)_(\S*)\(r([0-9])\).[\S]*', csv_file_name).groups()
+    groups = re.match(r'(\[[\S ]*\]\(strategy[0-4]\))_([\S]*)\(([\S]*)\)_([0-9])shot_([^_]*)_(\S*)\(r([0-9])\).[\S]*', csv_file_name).groups()
     #
     r = {}
     r["data"] = groups[0]
@@ -145,6 +145,9 @@ def get_experiment_settings(csv_file_path):
     r["template"] = groups[4]
     r["sample"] = groups[5]
     r["repeat"] = groups[6]
+    # 把t13SAU改为13SAU，把t13SAU-t25DAU-t25DAU改为13SAU-25DAU-25DAU
+    r["template"] = re.sub("^t", "", r["template"])
+    r["template"] = re.sub("-t", "-", r["template"])
     #
     return r
 
