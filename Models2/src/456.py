@@ -107,19 +107,17 @@ def mp_target(experiment_path_list, config_dict, target_type):
     logging.info("")
 
 
-def wd_coref(experiment_path_list, config_dict):
+def wd_coref(experiment_path_list, output_path, strategy, statistic_dict_path="仅strategy2需要此参数", threshold="仅strategy2需要此参数"):
     """
-    给定experiment_path_list::
+    给定experiment_path_list, 本函数把其中的每个experiment_path当做一次实验，读入对应路径下的.c_mp文件(corpus和mention pair list)，并对每个topic分别做wd聚类并评分。每个实验的结果分别保存到config_dict["output _path"]指定的输出路径。最后再汇总每个实验的结果，输出2个汇总结果。
 
-      experiment_path_list = [
-          'E:\\ProgramCode\\WhatGPTKnowsAboutWhoIsWho\\WhatGPTKnowsAboutWhoIsWho-main\\Models2\\data\\3.pred\\11-13/[\'36_ecb\'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)'，
-          ...
+    :param experiment_path_list: A list like [
+        r"some_path\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)",
+        r"some_path\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t25DAU_noSample(r1)"
       ]
-
-    本函数把其中的每个experiment_path当做一次实验，读入对应路径下的.c_mp文件(corpus和mention pair list)，并对每个topic分别做wd聚类并评分。每个实验的结果分别保存到config_dict["output _path"]指定的输出路径。最后再汇总每个实验的结果，输出2个汇总结果。
-
-    :param experiment_path_list:
-    :param config_dict:
+    :param strategy: 不同的聚类算法
+    :param statistic_dict_path: strategy 2 基于统计数据进行聚类，这个路径指向统计数据。
+    :param threshold: strategy 2 中，得分大于等于此阈值的mp才被认为是共指的。
     :return: no return.结果保存到config_dict["output _path"]指定的输出路径。
     """
     experiments_scores = []
@@ -146,19 +144,18 @@ def wd_coref(experiment_path_list, config_dict):
             prefix = n * 100000000 + p * 1000000
             """当前topic的prefix。比如36_ecb的prefix就是3600000000,36_ecbplus的prefix就是3601000000"""
             #
-            wd_clustering(prefix=prefix, mention_pairs_list=cur_topic_mp, strategy=2, statistic_dict_path=config_dict["statistic_dict_path"])
+            wd_clustering(prefix=prefix, mention_pairs_list=cur_topic_mp, strategy=strategy, statistic_dict_path=statistic_dict_path, threshold=threshold)
             #
             del cur_topic_id, cur_topic_mp, n, p, prefix
         remove_unselected_mention(corpus)
         check_whether_all_mentions_are_clustered(corpus)
         # 保存聚类结果
-        path = os.path.join(config_dict['output_path'],
-                            f"{os.path.basename(cur_experiment_path)}.wd_clustering.clustered_corpus")
+        path = os.path.join(output_path, f"{os.path.basename(cur_experiment_path)}.wd_clustering.clustered_corpus")
         with open(path, 'wb') as f:
             cPickle.dump(corpus, f)
         print(f"OUTPUT: corpus and wd clustering result under cur config saved in {path}")
         logging.info(f"OUTPUT: corpus and wd clustering result under cur config saved in {path}")
-        # 打分
+        # 对聚类结果打分
         for cur_topic_id, cur_topic in corpus.topics.items():
             for cur_doc_id, cur_doc in cur_topic.docs.items():
                 for cur_sent_id, cur_sent in cur_doc.sentences.items():
@@ -169,9 +166,9 @@ def wd_coref(experiment_path_list, config_dict):
                 del cur_doc_id, cur_doc
             del cur_topic_id, cur_topic
         prefix = f"{os.path.basename(cur_experiment_path)}.wd_clustering"
-        scores = coreference_scorer(corpus, config_dict["output_path"], output_prefix=prefix)
+        scores = coreference_scorer(corpus, output_path, output_prefix=prefix)
         # 保存
-        path = os.path.join(config_dict["output_path"], f"{prefix}.scores")
+        path = os.path.join(output_path, f"{prefix}.scores")
         with open(path, 'w', encoding="utf8") as f:
             f.writelines([f"{k}: {v}\n" for k, v in scores.items()])
         print(f"OUTPUT: clustering scores saved in {path}")
@@ -188,11 +185,12 @@ def wd_coref(experiment_path_list, config_dict):
                  f"===WD Coref:整合===\n"
                  f"===================")
     save_clustering_scores_into_csv_in_list_format(experiments_scores,
-                                                   output_path=config_dict["output_path"],
+                                                   output_path=output_path,
                                                    suffix="scores_wd_clustering_list.csv")
     save_clustering_scores_into_csv_in_table_format(experiments_scores,
-                                                    output_path=config_dict["output_path"],
+                                                    output_path=output_path,
                                                     suffix="scores_wd_clustering_table.csv")
+    return experiments_scores
 
 
 def cd_coref(experiment_path_list, config_dict):
@@ -256,6 +254,27 @@ def cd_coref(experiment_path_list, config_dict):
                                                     suffix="scores_cd_clustering_table.csv")
 
 
+def find_wd_coref_threshold(experiment_path_list, config_dict):
+    if config_dict["clustering_strategy"] not in [2]:
+        raise RuntimeError("这个聚类算法不需要指定阈值")
+    best_e = []
+    best_v = []
+    cur_threshold = 0.0048
+    while 1:
+        r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
+                     strategy=config_dict["clustering_strategy"],
+                     statistic_dict_path=config_dict["statistic_dict_path"], threshold=cur_threshold)
+        best_e.append([r[0]["entity_conll_f1"], cur_threshold])
+        best_v.append([r[0]["event_conll_f1"], cur_threshold])
+        if cur_threshold > 0.0238:
+            break
+        else:
+            cur_threshold += 0.0001
+    del cur_threshold
+
+    return best_e, best_v
+
+
 def main(config_dict):
     # 临时代码，用于清空输出路径
     shutil.rmtree(config_dict["output_path"])
@@ -286,13 +305,17 @@ def main(config_dict):
     #
     experiment_path_list = get_cmp_or_csv_files(config_dict["input_path"], with_cmp=False)
 
-    #
-    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="2s")
-    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd-")
-    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd+")
-    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd-")
-    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
-    # wd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    # mp
+    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="2s")
+    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd-")
+    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd+")
+    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd-")
+    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
+
+    # wd clustering
+    find_wd_coref_threshold(experiment_path_list=experiment_path_list, config_dict=config_dict)
+
+    # cd clustering
     # cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
 
 
@@ -301,6 +324,7 @@ if __name__ == '__main__':
     config_dict = {
         "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.mixture",
         "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
+        "clustering_strategy": 2,
         "statistic_dict_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\statistics\statistic_dict.pkl"
     }
     main(config_dict)
