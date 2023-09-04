@@ -107,7 +107,7 @@ def mp_target(experiment_path_list, config_dict, target_type):
     logging.info("")
 
 
-def wd_coref(experiment_path_list, output_path, strategy, statistic_dict_path="仅strategy2需要此参数", threshold="仅strategy2需要此参数"):
+def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic_dict_path="仅strategy2需要此参数"):
     """
     给定experiment_path_list, 本函数把其中的每个experiment_path当做一次实验，读入对应路径下的.c_mp文件(corpus和mention pair list)，并对每个topic分别做wd聚类并评分。每个实验的结果分别保存到config_dict["output _path"]指定的输出路径。最后再汇总每个实验的结果，输出2个汇总结果。
 
@@ -313,7 +313,10 @@ def main(config_dict):
     # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
 
     # wd clustering
-    find_wd_coref_threshold(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    # best_e, best_v = find_wd_coref_threshold(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
+                 strategy=config_dict["clustering_strategy"], threshold=0.006,
+                 statistic_dict_path=config_dict["statistic_dict_path"])
 
     # cd clustering
     # cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
