@@ -405,6 +405,45 @@ def get_mp_score_strategy_2(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, s
     return s, Cab, l0, li_count
 
 
+def get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, sd):
+    # 抽取
+    m1 = cur_wdmp[0]
+    m2 = cur_wdmp[1]
+    m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
+    m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
+    is_coref = cur_wdmp[2]
+    # 算分
+    Cab = 1 if (m1.gold_tag == m2.gold_tag) else 0
+    l0 = 1 if is_coref else 0
+    li_count = [0, 0, 0]  # 分别是li=0的个数，li=1的个数，li=2的个数
+    for mi in cur_doc_m_list:
+        if mi in [m1, m2]:
+            del mi
+            continue
+        else:  # m1 m2 mi组成一组
+            li = 0
+            if mi in cur_doc_pred_coref_dict[m1_id]:
+                li += 1
+            if mi in cur_doc_pred_coref_dict[m2_id]:
+                li += 1
+            #
+            li_count[li] += 1
+            #
+            del mi, li
+    s = 1
+    s = s * sd[f"P(li=0|l0={l0},Cab=1)"]**li_count[0]
+    s = s * sd[f"P(li=1|l0={l0},Cab=1)"]**li_count[1]
+    s = s * sd[f"P(li=2|l0={l0},Cab=1)"]**li_count[2]
+    s = s * sd[f"P(l0={l0}|Cab=1)"]
+    s = s * sd[f"P(Cab=1)"]
+    s = s / sd[f"P(li=0|l0={l0})"]**li_count[0]
+    s = s / sd[f"P(li=1|l0={l0})"]**li_count[1]
+    s = s / sd[f"P(li=2|l0={l0})"]**li_count[2]
+    s = s / sd[f"P(l0={l0})"]
+    #
+    return s, Cab, l0, li_count
+
+
 def agglomerate(sorted_cur_doc_mp, cluster_id=0, threshold=0):
     cur_doc_clusters = {}
     """簇。 cluster_id: [mention1, mention2]"""
@@ -470,6 +509,59 @@ def agglomerate(sorted_cur_doc_mp, cluster_id=0, threshold=0):
     "End of while 1(迭代聚类)"
     #
     return cur_doc_clusters, cluster_id
+
+
+def get_best_threshold_based_on_mp(scores_statistic):
+    scores_statistic[0] = sorted(scores_statistic[0])
+    scores_statistic[1] = sorted(scores_statistic[1])
+    print(f"temp[0]长度：{len(scores_statistic[0])}")
+    print(f"temp[1]长度：{len(scores_statistic[1])}")
+    #
+    def get_error_num(sorted_scores, th):
+        error_num = [0, 0]
+        for i in sorted_scores[1]:
+            if i[0] < th:
+                error_num[1] += 1
+            else:
+                break
+        for i in sorted(sorted_scores[0], reverse=True):
+            if i[0] >= th:
+                error_num[0] += 1
+            else:
+                break
+        return error_num
+    #
+    max_0 = scores_statistic[0][-1][0]
+    min_1 = scores_statistic[1][0][0]
+    print(f"max_0 - min_1: {max_0} - {min_1}")
+    cross_num = [0, 0]
+    cross_num[0] = get_error_num(scores_statistic, min_1)[0]
+    cross_num[1] = get_error_num(scores_statistic, max_0)[1]
+    print(f"交叉部分共{sum(cross_num)}个：{cross_num}")
+    #
+    best_log = None
+    for i in scores_statistic[1]:
+        th = i[0]
+        error_num = get_error_num(scores_statistic, th)
+        TN = len(scores_statistic[0]) - error_num[0]
+        FP = error_num[0]
+        FN = error_num[1]
+        TP = len(scores_statistic[1]) - error_num[1]
+        p = TP/(TP+FP)
+        r = TP/(TP+FN)
+        f1 = 2*r*p/(p+r)
+        error_sum = sum(error_num)
+        if best_log is None:
+            best_log = {}
+            best_log[error_sum] = [(th, error_num, r, p, f1)]
+        elif error_sum == list(best_log.keys())[0]:
+            best_log[error_sum].append(th)
+        elif error_sum < list(best_log.keys())[0]:
+            best_log = {}
+            best_log[error_sum] = [(th, error_num, r, p, f1)]
+    #
+    print(f"best_log(error_sum: [(阈值， [FP, FN], r, p, f1)]) = {best_log}")
+
 
 def wd_clustering_2(prefix, mp_list, statistic_dict_path, threshold=0.02):  # 0.015 0.0078
     """
@@ -591,56 +683,129 @@ def wd_clustering_2(prefix, mp_list, statistic_dict_path, threshold=0.02):  # 0.
             cur_mention.cd_coref_chain = prefix + cur_cluster_id
     del cur_cluster_id, cur_cluster, cur_mention
     # 1.6
-    def get_best_threshold_based_on_mp(scores_statistic):
-        scores_statistic[0] = sorted(scores_statistic[0])
-        scores_statistic[1] = sorted(scores_statistic[1])
-        print(f"temp[0]长度：{len(scores_statistic[0])}")
-        print(f"temp[1]长度：{len(scores_statistic[1])}")
-        #
-        def get_error_num(sorted_scores, th):
-            error_num = [0, 0]
-            for i in sorted_scores[1]:
-                if i[0] < th:
-                    error_num[1] += 1
-                else:
-                    break
-            for i in sorted(sorted_scores[0], reverse=True):
-                if i[0] >= th:
-                    error_num[0] += 1
-                else:
-                    break
-            return error_num
-        #
-        max_0 = scores_statistic[0][-1][0]
-        min_1 = scores_statistic[1][0][0]
-        print(f"max_0 - min_1: {max_0} - {min_1}")
-        cross_num = [0, 0]
-        cross_num[0] = get_error_num(scores_statistic, min_1)[0]
-        cross_num[1] = get_error_num(scores_statistic, max_0)[1]
-        print(f"交叉部分共{sum(cross_num)}个：{cross_num}")
-        #
-        best_log = None
-        for i in scores_statistic[1]:
-            th = i[0]
-            error_num = get_error_num(scores_statistic, th)
-            TN = len(scores_statistic[0]) - error_num[0]
-            FP = error_num[0]
-            FN = error_num[1]
-            TP = len(scores_statistic[1]) - error_num[1]
-            p = TP/(TP+FP)
-            r = TP/(TP+FN)
-            f1 = 2*r*p/(p+r)
-            error_sum = sum(error_num)
-            if best_log is None:
-                best_log = {}
-                best_log[error_sum] = [(th, error_num, r, p, f1)]
-            elif error_sum == list(best_log.keys())[0]:
-                best_log[error_sum].append(th)
-            elif error_sum < list(best_log.keys())[0]:
-                best_log = {}
-                best_log[error_sum] = [(th, error_num, r, p, f1)]
-        #
-        print(best_log)
+    get_best_threshold_based_on_mp(scores_statistic)
+
+
+def wd_clustering_3(prefix, mp_list, statistic_dict_path, threshold=0.0):  # 0.015 0.0078
+    """
+    给定一个topic下的mention pair list，做wd聚类。
+
+    :param prefix: The prefix of cluster_id. 本函数对簇进行编号：0,1,2,...
+      但是不同topic会分别执行本函数，这样cluster_id就重了。所以给cluster_id加一个前缀。
+      比如36_ecb这个topic下的cluster 1在加前缀后就变成了3600000001；37_ecbplus这个topic下的cluster 1加前缀后变成了3701000001.这就区分开了。
+    :param mp_list: [[mention_obj_1, mention_obj_2, 预测值], ...]预测值是模型预测的结果，Ture是共指，False是不共指，None是没预测出来。
+    :param statistic_dict_path: 如果使用统计权重，则从这里读取统计信息。
+    :param threshold: 对得分大于等于此值的mp进行聚类。小于此值的mp，即使预测为True，也认为是预测错了，不聚类。
+    :return: no return. cd_coref_chain of mention obj in mention_pairs_list is changed.
+      This also lead to the change of cd_coref_chain of mention obj in Corpus obj.
+    """
+    # 1.1. 从mp_list中抽取wd的mention pair并按文件组织。
+    wdmp = get_wdmp(mp_list)
+    """within doc mention pair"""
+    del mp_list
+    # 1.2. 读取聚类算法所需权重
+    with open(statistic_dict_path, 'rb') as f:
+        statistic_dict = cPickle.load(f)
+        sd = statistic_dict["36_ecb"]["all"]  # TODO: 现在是写死的，以后得改
+        """statistic dict, 存放基于历史数据得出的统计结果"""
+    del statistic_dict
+    # 1.3. 遍历每一个文档，做文档内聚类
+    scores_statistic = [[], []]
+    """
+    第一个list是真实共指的mp信息组成的list，第二个item是真实不共指的mp信息组成的list::
+    
+        [
+            [  # 真实共指的mp们
+                [当前mp的得分, 当前mp的预测, 其他信息],
+                [当前mp的得分, 当前mp的预测, 其他信息],
+                ...
+            ],
+            [  # 真实不共指的mp们
+                [当前mp的得分, 当前mp的预测, 其他信息],
+                [当前mp的得分, 当前mp的预测, 其他信息],
+                ...
+            ]
+        ]
+    """
+    #
+    clusters = {}
+    """簇。 cluster_id: [mention1, mention2]"""
+    cluster_id = 0
+    """cluster id"""
+    #
+    for cur_doc_id, cur_doc_wdmp in wdmp.items():
+        # -1.1. 准备cur_doc_m_list
+        cur_doc_m_list = []
+        """[m1, m2, ...]"""
+        for cur_wdmp in cur_doc_wdmp:
+            m1 = cur_wdmp[0]
+            m2 = cur_wdmp[1]
+            #
+            if m1 not in cur_doc_m_list:
+                cur_doc_m_list.append(m1)
+            if m2 not in cur_doc_m_list:
+                cur_doc_m_list.append(m2)
+            del m1, m2, cur_wdmp
+        # -1.2. 准备cur_doc_pred_coref_dict
+        cur_doc_pred_coref_dict = get_coref_dict(cur_doc_wdmp, pred_or_truth="pred")
+        """统计当前文档中预测的共指信息
+        {
+            "mention1_id": {a set of mentions that co-referred with mention1},
+            "mention2_id": {a set of mentions that co-referred with mention2},
+        }
+        """
+        # -1.3. 准备cur_doc_truth_coref_dict
+        cur_doc_truth_coref_dict = get_coref_dict(cur_doc_wdmp, pred_or_truth="truth")
+        """统计当前文档中真实的共指信息
+        {
+            "mention1_id": {a set of mentions that co-referred with mention1},
+            "mention2_id": {a set of mentions that co-referred with mention2},
+        }
+        """
+        # -2. 计算得分
+        for cur_wdmp in cur_doc_wdmp:
+            # 抽取
+            m1 = cur_wdmp[0]
+            m2 = cur_wdmp[1]
+            m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
+            m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
+            #
+            s, Cab, l0, li_count = get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, sd=sd)
+            #
+            scores_statistic[Cab].append([s, l0, li_count, len(cur_doc_truth_coref_dict[m1_id]), len(cur_doc_truth_coref_dict[m2_id])])
+            # 记录分儿
+            cur_wdmp.append(s)
+            #
+            del cur_wdmp, m1, m2, m1_id, m2_id, s, Cab, l0, li_count
+        # -3. 排序
+        sorted_cur_doc_mp = sorted(cur_doc_wdmp, key=lambda x: x[3])
+        # -4. 凝聚
+        cur_doc_clusters, cluster_id = agglomerate(sorted_cur_doc_mp,  cluster_id=cluster_id, threshold=threshold)
+        clusters.update(cur_doc_clusters)
+        del cur_doc_clusters
+        # -5. 清空过期变量
+        del cur_doc_pred_coref_dict, cur_doc_truth_coref_dict
+        del cur_doc_m_list
+        del sorted_cur_doc_mp
+        del cur_doc_id, cur_doc_wdmp
+    "End of for cur_doc_id, cur_doc_wdmp in wdmp.items()"
+    del cluster_id
+    # 1.4. 检测是否wd
+    for cur_cluster_id, cur_cluster in clusters.items():
+        doc_of_cur_cluster = None
+        for cur_mention in cur_cluster:
+            if doc_of_cur_cluster is None:
+                doc_of_cur_cluster = cur_mention.doc_id
+            else:
+                if doc_of_cur_cluster != cur_mention.doc_id:
+                    raise RuntimeError
+        del cur_cluster_id, cur_cluster, doc_of_cur_cluster, cur_mention
+    # 1.5. 保存
+    for cur_cluster_id, cur_cluster in clusters.items():
+        for cur_mention in cur_cluster:
+            cur_mention.cd_coref_chain = prefix + cur_cluster_id
+    del cur_cluster_id, cur_cluster, cur_mention
+    # 1.6
     get_best_threshold_based_on_mp(scores_statistic)
 
 
@@ -661,8 +826,8 @@ def wd_clustering(prefix, mention_pairs_list, strategy, statistic_dict_path="", 
         return wd_clustering_1(prefix, mention_pairs_list)
     elif strategy == 2:
         return wd_clustering_2(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path, threshold=threshold)
-    # elif strategy == 3:
-    #     return wd_clustering_3(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path)
+    elif strategy == 3:
+        return wd_clustering_3(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path)
     else:
         raise RuntimeError("无效的strategy")
 
