@@ -49,7 +49,7 @@ Answer: <Yes or No>
 Text: < [S_CONTEXT] >
 Mention1: < [MENTION1] >
 Mention2: < [MENTION2] >
-Answer:""",  # 和10相比，引号变成了尖括号
+Answer:""",  # 和9相比，引号变成了尖括号
     "11SAU": """Please determine whether two mentions in a given text are co-referred. Two mention are co-referred only when they are refer to the identical thing. Note that if a mention is a side, a part, a view or a aspect of aonther mention, the two mentions don't co-referred. 
 Use the following format:
 Text: < the given text >
