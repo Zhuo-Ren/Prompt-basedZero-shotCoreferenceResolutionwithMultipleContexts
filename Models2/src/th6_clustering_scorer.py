@@ -74,7 +74,12 @@ def write_mention_based_cd_clusters(corpus, is_event, is_gold, out_file):
             for sent_id in sorted(curr_doc.sentences.keys()):
                 curr_sent = curr_doc.sentences[sent_id]
                 # 2.4 排序并遍历mentions
-                mentions = curr_sent.gold_event_mentions if is_event else curr_sent.gold_entity_mentions
+                if is_event is True:
+                    mentions = curr_sent.gold_event_mentions
+                elif is_event is False:
+                    mentions = curr_sent.gold_entity_mentions
+                elif is_event is None:
+                    mentions = curr_sent.gold_entity_mentions + curr_sent.gold_event_mentions
                 mentions.sort(key=lambda x: x.start_offset, reverse=True)
                 for mention in mentions:
                     # map the gold coref tags to unique ids
@@ -106,7 +111,7 @@ def read_conll_f1(filename):
         for line in ins:
             new_line = line.strip()
             if new_line.find('F1:') != -1:
-                find = re.findall("[0-9]*%", new_line)
+                find = re.findall("[0-9.]*%", new_line)
                 r_list.append(float(find[0][:-1]))
                 p_list.append(float(find[1][:-1]))
                 f1_list.append(float(find[2][:-1]))
@@ -133,14 +138,18 @@ def save_clustering_scores_into_csv_in_list_format(experiments_scores, output_pa
         'model_name', 'model_config',
         'prefix_num', 'template',
         'sample', 'repeat',
-        'E_MUC_p', 'E_MUC_r', 'E_MUC_F1',
-        'E_Bcubed_p', 'E_Bcubed_r', 'E_Bcubed_F1',
-        'E_CEAFe_p', 'E_CEAFe_r', 'E_CEAFe_F1',
+        'E_MUC_r', 'E_MUC_p', 'E_MUC_F1',
+        'E_Bcubed_r', 'E_Bcubed_p', 'E_Bcubed_F1',
+        'E_CEAFe_r', 'E_CEAFe_p', 'E_CEAFe_F1',
         'E_CoNLL_F1',
-        'V_MUC_p', 'V_MUC_r', 'V_MUC_F1',
-        'V_Bcubed_p', 'V_Bcubed_r', 'V_Bcubed_F1',
-        'V_CEAFe_p', 'V_CEAFe_r', 'V_CEAFe_F1',
+        'V_MUC_r', 'V_MUC_p', 'V_MUC_F1',
+        'V_Bcubed_r', 'V_Bcubed_p', 'V_Bcubed_F1',
+        'V_CEAFe_r', 'V_CEAFe_p', 'V_CEAFe_F1',
         'V_CoNLL_F1',
+        'A_MUC_r', 'A_MUC_p', 'A_MUC_F1',
+        'A_Bcubed_r', 'A_Bcubed_p', 'A_Bcubed_F1',
+        'A_CEAFe_r', 'A_CEAFe_p', 'A_CEAFe_F1',
+        'A_CoNLL_F1',
     ]
     writer = csv.DictWriter(csvfile, fieldnames=header)
     writer.writeheader()
@@ -175,6 +184,17 @@ def save_clustering_scores_into_csv_in_list_format(experiments_scores, output_pa
             'V_CEAFe_p': cur_experiment_score['event_ceafe_p'],
             'V_CEAFe_F1': cur_experiment_score['event_ceafe_f1'],
             'V_CoNLL_F1': cur_experiment_score['event_conll_f1'],
+            #
+            'A_MUC_r': cur_experiment_score['all_muc_r'],
+            'A_MUC_p': cur_experiment_score['all_muc_p'],
+            'A_MUC_F1': cur_experiment_score['all_muc_f1'],
+            'A_Bcubed_r': cur_experiment_score['all_bcubed_r'],
+            'A_Bcubed_p': cur_experiment_score['all_bcubed_p'],
+            'A_Bcubed_F1': cur_experiment_score['all_bcubed_f1'],
+            'A_CEAFe_r': cur_experiment_score['all_ceafe_r'],
+            'A_CEAFe_p': cur_experiment_score['all_ceafe_p'],
+            'A_CEAFe_F1': cur_experiment_score['all_ceafe_f1'],
+            'A_CoNLL_F1': cur_experiment_score['all_conll_f1'],
         })
     print(f"OUTPUT: {suffix}输出到{file_path}")
 
@@ -244,18 +264,23 @@ def coreference_scorer(corpus, output_path, output_prefix=""):
     #
     gold_event_path = os.path.join(output_path, f'{output_prefix}.event.key_conll')
     gold_entity_path = os.path.join(output_path, f'{output_prefix}.entity.key_conll')
+    gold_all_path = os.path.join(output_path, f'{output_prefix}.all.key_conll')
     pred_event_path = os.path.join(output_path, f'{output_prefix}.event.response_conll')
     pred_entity_path = os.path.join(output_path, f'{output_prefix}.entity.response_conll')
+    pred_all_path = os.path.join(output_path, f'{output_prefix}.all.response_conll')
     event_conll_path = os.path.join(output_path, f'{output_prefix}.event.scores.txt')
     entity_conll_path = os.path.join(output_path, f'{output_prefix}.entity.scores.txt')
+    all_conll_path = os.path.join(output_path, f'{output_prefix}.all.scores.txt')
     # 1 保存真值
     logging.info('Creating mention-based mentions key file')
     write_mention_based_cd_clusters(corpus, is_event=True, is_gold=True, out_file=gold_event_path)
     write_mention_based_cd_clusters(corpus, is_event=False, is_gold=True, out_file=gold_entity_path)
+    write_mention_based_cd_clusters(corpus, is_event=None, is_gold=True, out_file=gold_all_path)
     # 2 保存预测值
     logging.info('Creating mention-based mentions response file')
     write_mention_based_cd_clusters(corpus, is_event=True, is_gold=False, out_file=pred_event_path)
     write_mention_based_cd_clusters(corpus, is_event=False, is_gold=False, out_file=pred_entity_path)
+    write_mention_based_cd_clusters(corpus, is_event=None, is_gold=False, out_file=pred_all_path)
     # 3 计算性能
     # 3.1 生成命令
     logging.info('Calc metrics')
@@ -264,9 +289,12 @@ def coreference_scorer(corpus, output_path, output_prefix=""):
     perl scorer / scorer.pl all E:\ProgramCode\Barhom\Barhom2019My\event_entity_coref_ecb_plus\data\gold\cybulska_gold\CD_test_entity_mention_based.key_conll output\CD_test_entity_mention_based.response_conll none > 输出路径
     """
     entity_scorer_command = (f'perl scorer/scorer.pl all {gold_entity_path} {pred_entity_path} none > {entity_conll_path} \n')
+    all_scorer_command = (f'perl scorer/scorer.pl all {gold_all_path} {pred_all_path} none > {all_conll_path} \n')
     # 3.2 执行命令
     processes = [subprocess.Popen(event_scorer_command, shell=True),
-                 subprocess.Popen(entity_scorer_command, shell=True)]
+                 subprocess.Popen(entity_scorer_command, shell=True),
+                 subprocess.Popen(all_scorer_command, shell=True)
+                 ]
     while processes:
         status = processes[0].poll()
         if status is not None:
@@ -276,9 +304,11 @@ def coreference_scorer(corpus, output_path, output_prefix=""):
     # 4.1 读取perl的打分结果
     event_scores = read_conll_f1(event_conll_path)
     entity_scores = read_conll_f1(entity_conll_path)
+    all_scores = read_conll_f1(all_conll_path)
     scores = {}
     scores.update({f"entity_{k}": v for k, v in entity_scores.items()})
     scores.update({f"event_{k}": v for k, v in event_scores.items()})
+    scores.update({f"all_{k}": v for k, v in all_scores.items()})
     #
     return scores
 
