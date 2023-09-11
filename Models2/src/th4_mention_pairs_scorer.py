@@ -160,7 +160,7 @@ def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_
         'model_name', 'model_config',
         'prefix_num', 'template',
         'sample', 'repeat',
-        'valid', 'acc', 'auc', 'p', 'r', 'F1'
+        'valid', 'auc', 'acc', 'r', 'p', 'F1'
     ]
     writer = csv.DictWriter(csvfile, fieldnames=header)
     writer.writeheader()
@@ -174,10 +174,10 @@ def save_mention_pair_scores_into_csv_in_list_format(experiments_scores, output_
             'sample': cur_experiment_score['sample'],
             'repeat': cur_experiment_score['repeat'],
             'valid': cur_experiment_score['valid'],
-            'acc': cur_experiment_score['acc'],
             'auc': cur_experiment_score['auc'],
-            'p': cur_experiment_score['precision'],
+            'acc': cur_experiment_score['acc'],
             'r': cur_experiment_score['recall'],
+            'p': cur_experiment_score['precision'],
             'F1': cur_experiment_score['f1']
         })
     print(f"OUTPUT: {suffix}输出到{file_path}")
@@ -199,8 +199,8 @@ def save_mention_pair_scores_into_csv_in_table_format(experiments_scores, output
         repeat = cur_experiment_score['repeat']
         setting = f"{model_name}({model_config})_{prefix_num}shot_{sample}(r{repeat})"
         valid = f"{round(cur_experiment_score['valid']*100, 1):.1f}"
-        acc = f"{round(cur_experiment_score['acc']*100, 1):.1f}"
         auc = f"{round(cur_experiment_score['auc']*100, 1):.1f}"
+        acc = f"{round(cur_experiment_score['acc']*100, 1):.1f}"
         p = f"{round(cur_experiment_score['precision']*100, 1):.1f}"
         r = f"{round(cur_experiment_score['recall']*100, 1):.1f}"
         f1 = f"{round(cur_experiment_score['f1']*100, 1):.1f}"
