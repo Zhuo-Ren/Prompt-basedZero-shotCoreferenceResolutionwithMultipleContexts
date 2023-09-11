@@ -123,10 +123,10 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"\n{'=' * (19 + len(os.path.basename(cur_experiment_path)))}\n"
-              f"===CD Clustering:{os.path.basename(cur_experiment_path)}===\n"
+              f"===WD Clustering:{os.path.basename(cur_experiment_path)}===\n"
               f"{'=' * (19 + len(os.path.basename(cur_experiment_path)))}")
         logging.info(f"\n{'=' * (19 + len(os.path.basename(cur_experiment_path)))}\n"
-                     f"===CD Clustering:{os.path.basename(cur_experiment_path)}===\n"
+                     f"===WD Clustering:{os.path.basename(cur_experiment_path)}===\n"
                      f"{'=' * (19 + len(os.path.basename(cur_experiment_path)))}")
         #
         cur_cmp_path = f"{cur_experiment_path}.c_mp"
@@ -254,25 +254,36 @@ def cd_coref(experiment_path_list, config_dict):
                                                     suffix="scores_cd_clustering_table.csv")
 
 
-def find_wd_coref_threshold(experiment_path_list, config_dict):
+def get_best_threshold_based_on_cluster(experiment_path_list, config_dict, min_th, max_th):
+    """
+    注意，这个函数只针对experiment_path_list中的第一个实验进行分析。
+
+    :param experiment_path_list:
+    :param config_dict:
+    :return:
+    """
+    delta = 0.0001
     if config_dict["clustering_strategy"] not in [2]:
         raise RuntimeError("这个聚类算法不需要指定阈值")
-    best_e = []
-    best_v = []
-    cur_threshold = 0.0048
+    e_f1_log = []
+    v_f1_log = []
+    a_f1_log = []
+    cur_threshold = min_th
     while 1:
         r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
                      strategy=config_dict["clustering_strategy"],
                      statistic_dict_path=config_dict["statistic_dict_path"], threshold=cur_threshold)
-        best_e.append([r[0]["entity_conll_f1"], cur_threshold])
-        best_v.append([r[0]["event_conll_f1"], cur_threshold])
-        if cur_threshold > 0.0238:
+
+        e_f1_log.append([r[0]["entity_conll_f1"], cur_threshold])
+        v_f1_log.append([r[0]["event_conll_f1"], cur_threshold])
+        a_f1_log.append([r[0]["all_conll_f1"], cur_threshold])
+        if cur_threshold > max_th:
             break
         else:
-            cur_threshold += 0.0001
+            cur_threshold += delta
     del cur_threshold
 
-    return best_e, best_v
+    return e_f1_log, v_f1_log, a_f1_log
 
 
 def main(config_dict):
@@ -312,11 +323,54 @@ def main(config_dict):
     # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd-")
     # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
 
+    # get best wd threshold
+    # wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
+    #              strategy=config_dict["clustering_strategy"], threshold=1,
+    #              statistic_dict_path=config_dict["statistic_dict_path"])
+    #
+    # min_th, max_th = 0.0007, 0.0270  # t13-25-13 mp_best=0.0158
+    # min_th, max_th = 0.0007, 0.0270  # t13-25-25 mp_best=0.0159
+    # min_th, max_th = 0.0017, 0.0270  # t13 mp_best=0.0105
+    # min_th, max_th = 0.0007, 0.0270  # t17 mp_best=0.0117
+    # min_th, max_th = 0.0007, 0.0307  # t25 mp_best=0.0199
+    # e_f1_log, v_f1_log, a_f1_log = get_best_threshold_based_on_cluster(
+    #     experiment_path_list=experiment_path_list, config_dict=config_dict,
+    #     min_th=min_th, max_th=max_th
+    # )
+    # max_e_f1 = max([i[0] for i in e_f1_log])
+    # max_v_f1 = max([i[0] for i in v_f1_log])
+    # max_a_f1 = max([i[0] for i in a_f1_log])
+    # best_e_th = [i[1] for i in e_f1_log if i[0] == max_e_f1]
+    # best_v_th = [i[1] for i in v_f1_log if i[0] == max_v_f1]
+    # best_a_th = [i[1] for i in a_f1_log if i[0] == max_a_f1]
+    # best_ev_th = sorted(list(set(best_e_th) & set(best_v_th)))
+    # best_a_th = sorted(best_a_th)
+    # #
+    # ev_th_path = os.path.join(config_dict["output_path"], f"{os.path.basename(experiment_path_list[0])}.wd_clustering.th_ev")
+    # f = open(ev_th_path, 'w')
+    # f.write(f"best e f1:{max_e_f1}\n")
+    # f.write(f"best v f1:{max_v_f1}\n")
+    # f.write(f"best_th: {best_ev_th}\n")
+    # f.write(f"e_f1: {e_f1_log}\n")
+    # f.write(f"v_f1: {v_f1_log}\n")
+    # f.close()
+    # #
+    # a_th_path = os.path.join(config_dict["output_path"], f"{os.path.basename(experiment_path_list[0])}.wd_clustering.th_a")
+    # f = open(a_th_path, 'w')
+    # f.write(f"best a f1:{max_a_f1}\n")
+    # f.write(f"best_a_th: {best_a_th}\n")
+    # f.write(f"a_f1: {a_f1_log}\n")
+
+
     # wd clustering
-    # best_e, best_v = find_wd_coref_threshold(experiment_path_list=experiment_path_list, config_dict=config_dict)
-    r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
-                 strategy=config_dict["clustering_strategy"], threshold=0.006,
-                 statistic_dict_path=config_dict["statistic_dict_path"])
+    # t_13-25-13 th = 0.0097
+    # t_13-25-25 th = 0.0031999999999999984
+    # t_13 th = 0.0094
+    # t_17 th = 0.0110
+    # t_25 th = 0.0184
+    # r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
+    #              strategy=config_dict["clustering_strategy"], threshold=0.0097,
+    #              statistic_dict_path=config_dict["statistic_dict_path"])
 
     # cd clustering
     # cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
@@ -325,7 +379,7 @@ def main(config_dict):
 if __name__ == '__main__':
     # config
     config_dict = {
-        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.mixture",
+        "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\temp",
         "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
         "clustering_strategy": 2,
         "statistic_dict_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\statistics\statistic_dict.pkl"
