@@ -147,7 +147,7 @@ if __name__ == '__main__':
     config_dict = {
         "2s_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)",
         "wd-_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t25DAU_noSample(r1)",
-        "cd-_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t25DAU_noSample(r1)",
+        "cd-_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\3.pred\['36_ecb'](strategy3)_ChatGPT3.5(b1t0)_0shot_t13SAU_noSample(r1)",
         "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
     }
     main(config_dict)
