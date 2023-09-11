@@ -405,7 +405,7 @@ def get_mp_score_strategy_2(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, s
     return s, Cab, l0, li_count
 
 
-def get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, sd):
+def get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict):
     # 抽取
     m1 = cur_wdmp[0]
     m2 = cur_wdmp[1]
@@ -430,17 +430,20 @@ def get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, s
             li_count[li] += 1
             #
             del mi, li
-    s = 1
-    s = s * sd[f"P(li=0|l0={l0},Cab=1)"]**li_count[0]
-    s = s * sd[f"P(li=1|l0={l0},Cab=1)"]**li_count[1]
-    s = s * sd[f"P(li=2|l0={l0},Cab=1)"]**li_count[2]
-    s = s * sd[f"P(l0={l0}|Cab=1)"]
-    s = s * sd[f"P(Cab=1)"]
-    s = s / sd[f"P(li=0|l0={l0})"]**li_count[0]
-    s = s / sd[f"P(li=1|l0={l0})"]**li_count[1]
-    s = s / sd[f"P(li=2|l0={l0})"]**li_count[2]
-    s = s / sd[f"P(l0={l0})"]
+    s = 0
+    p = 0.8
+    # 直接证据
+    s += p if l0 == 1 else -1*p
+    # 间接证据
+    s += -1*p*p*li_count[1]
+    s += p*p*li_count[2]
     #
+    if Cab == 0:
+        print(f"预测{'正确' if Cab == l0 else '错误'}，打分{'正确' if s < 0 else '错误'}")
+        logging.info(f"预测{'正确' if Cab == l0 else '错误'}，打分{'正确' if s < 0 else '错误'}")
+    elif Cab == 1:
+        print(f"预测{'正确' if Cab == l0 else '错误'}，打分{'正确' if s >= 0 else '错误'}")
+        logging.info(f"预测{'正确' if Cab == l0 else '错误'}，打分{'正确' if s >= 0 else '错误'}")
     return s, Cab, l0, li_count
 
 
@@ -686,7 +689,7 @@ def wd_clustering_2(prefix, mp_list, statistic_dict_path, threshold=0.02):  # 0.
     get_best_threshold_based_on_mp(scores_statistic)
 
 
-def wd_clustering_3(prefix, mp_list, statistic_dict_path, threshold=0.0):  # 0.015 0.0078
+def wd_clustering_3(prefix, mp_list, threshold=0.0):  # 0.015 0.0078
     """
     给定一个topic下的mention pair list，做wd聚类。
 
@@ -704,11 +707,7 @@ def wd_clustering_3(prefix, mp_list, statistic_dict_path, threshold=0.0):  # 0.0
     """within doc mention pair"""
     del mp_list
     # 1.2. 读取聚类算法所需权重
-    with open(statistic_dict_path, 'rb') as f:
-        statistic_dict = cPickle.load(f)
-        sd = statistic_dict["36_ecb"]["all"]  # TODO: 现在是写死的，以后得改
-        """statistic dict, 存放基于历史数据得出的统计结果"""
-    del statistic_dict
+    pass  # 无需权重
     # 1.3. 遍历每一个文档，做文档内聚类
     scores_statistic = [[], []]
     """
@@ -770,7 +769,7 @@ def wd_clustering_3(prefix, mp_list, statistic_dict_path, threshold=0.0):  # 0.0
             m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
             m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
             #
-            s, Cab, l0, li_count = get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict, sd=sd)
+            s, Cab, l0, li_count = get_mp_score_strategy_3(cur_wdmp, cur_doc_m_list, cur_doc_pred_coref_dict)
             #
             scores_statistic[Cab].append([s, l0, li_count, len(cur_doc_truth_coref_dict[m1_id]), len(cur_doc_truth_coref_dict[m2_id])])
             # 记录分儿
@@ -827,7 +826,7 @@ def wd_clustering(prefix, mention_pairs_list, strategy, statistic_dict_path="", 
     elif strategy == 2:
         return wd_clustering_2(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path, threshold=threshold)
     elif strategy == 3:
-        return wd_clustering_3(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path)
+        return wd_clustering_3(prefix, mention_pairs_list)
     else:
         raise RuntimeError("无效的strategy")
 

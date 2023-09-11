@@ -368,9 +368,9 @@ def main(config_dict):
     # t_13 th = 0.0094
     # t_17 th = 0.0110
     # t_25 th = 0.0184
-    # r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
-    #              strategy=config_dict["clustering_strategy"], threshold=0.0097,
-    #              statistic_dict_path=config_dict["statistic_dict_path"])
+    r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
+                 strategy=config_dict["clustering_strategy"], threshold=0,
+                 statistic_dict_path=config_dict["statistic_dict_path"])
 
     # cd clustering
     # cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
@@ -381,7 +381,7 @@ if __name__ == '__main__':
     config_dict = {
         "input_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\temp",
         "output_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\output",
-        "clustering_strategy": 2,
+        "clustering_strategy": 3,
         "statistic_dict_path": r"E:\ProgramCode\WhatGPTKnowsAboutWhoIsWho\WhatGPTKnowsAboutWhoIsWho-main\Models2\data\statistics\statistic_dict.pkl"
     }
     main(config_dict)
