@@ -11,19 +11,21 @@ from classes import Corpus, Topic, Document, Sentence, Token, Mention, EventMent
 from template import templates_list
 
 
-def cd_clustering(prefix, mention_pairs_list):
+def cd_clustering(prefix, mention_pairs_list, strategy, statistic_dict_path="", threshold=""):
     """
-    Give mention_pairs_list, get the clusters.
-    聚类算法1：直接cd聚类
+    参见wd_clustering
+    """
+    if strategy == 1:
+        return cd_clustering_1(prefix, mention_pairs_list)
+    # elif strategy == 2:
+    #     return cd_clustering_2(prefix, mention_pairs_list, statistic_dict_path=statistic_dict_path, threshold=threshold)
+    elif strategy == 3:
+        return cd_clustering_3(prefix, mention_pairs_list)
+    else:
+        raise RuntimeError("无效的strategy")
 
 
-    :param prefix: The prefix of cluster_id. 本函数对簇进行编号：0,1,2,...
-      但是不同topic会分别执行本函数，这样cluster_id就重了。所以给cluster_id加一个前缀。
-      变成36ecbplus0, 36ecbplus1, ...这样。
-    :param mention_pairs_list:
-    :return: no return. cd_coref_chain of mention obj in mention_pairs_list is changed.
-      This also lead to the change of cd_coref_chain of mention obj in Corpus obj.
-    """
+def cd_clustering_1(prefix, mention_pairs_list):
     # 1. Create a dictionary to represent the coreferred
     coreference_dict = {}
     """
@@ -100,6 +102,119 @@ def cd_clustering(prefix, mention_pairs_list):
         m1 = cur_mention_pair[0]
         m2 = cur_mention_pair[1]
         score = cur_mention_pair[3]
+        m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
+        m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
+        #
+        mention1_clustered = m1_id in clustered_mention.keys()
+        mention2_clustered = m2_id in clustered_mention.keys()
+        #
+        if score < 1:
+            if not mention1_clustered:
+                cluster_id += 1
+                clustered_mention[m1_id] = cluster_id
+                clusters[cluster_id] = [m1]
+            if not mention2_clustered:
+                cluster_id += 1
+                clustered_mention[m2_id] = cluster_id
+                clusters[cluster_id] = [m2]
+        else:
+            if mention1_clustered and (not mention2_clustered):
+                mention1_cluster_id = clustered_mention[m1_id]
+                clustered_mention[m2_id] = mention1_cluster_id
+                clusters[mention1_cluster_id].append(m2)
+            elif (not mention1_clustered) and mention2_clustered:
+                mention2_cluster_id = clustered_mention[m2_id]
+                clustered_mention[m1_id] = mention2_cluster_id
+                clusters[mention2_cluster_id].append(m1)
+            elif (not mention1_clustered) and (not mention2_clustered):
+                cluster_id += 1
+                clustered_mention[m1_id] = cluster_id
+                clustered_mention[m2_id] = cluster_id
+                clusters[cluster_id] = [m1, m2]
+            elif mention1_clustered and mention2_clustered:
+                mention1_cluster_id = clustered_mention[m1_id]
+                mention2_cluster_id = clustered_mention[m2_id]
+                if mention1_cluster_id == mention2_cluster_id:
+                    pass  # m1和m2已经是同一个簇中了，什么都不用做
+                else:
+                    # 合并两个簇
+                    cluster_id += 1
+                    new_cluster = clusters[mention1_cluster_id] + clusters[mention2_cluster_id]
+                    del clusters[mention1_cluster_id]
+                    del clusters[mention2_cluster_id]
+                    clusters[cluster_id] = new_cluster
+                    for cur_mention in new_cluster:
+                        cur_mention_id = f"{cur_mention.doc_id}-{cur_mention.sent_id}-{cur_mention.start_offset}-{cur_mention.end_offset}"
+                        clustered_mention[cur_mention_id] = cluster_id
+            # End of if else 4种情况
+        # End of if score < 1 ... else
+    # 5. 保存
+    for cur_cluster_id, cur_cluster in clusters.items():
+        for cur_mention in cur_cluster:
+            cur_mention.cd_coref_chain = prefix + cur_cluster_id
+
+
+def cd_clustering_3(prefix, mp_list):
+    # -1.1. 准备m_list
+    m_list = []
+    """[m1, m2, ...]"""
+    for cur_mp in mp_list:
+        m1 = cur_mp[0]
+        m2 = cur_mp[1]
+        #
+        if m1 not in m_list:
+            m_list.append(m1)
+        if m2 not in m_list:
+            m_list.append(m2)
+        del m1, m2, cur_mp
+    # -1.2. 准备pred_coref_dict
+    pred_coref_dict = {}
+    """
+    {
+        "mention1_id": {a set of mentions that co-referred with mention1},
+        "mention2_id": {a set of mentions that co-referred with mention2},
+    }
+    """
+    for m1, m2, is_coreferred in mp_list:
+        m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
+        m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
+        #
+        if m1_id not in pred_coref_dict:
+            pred_coref_dict[m1_id] = []
+        if m2_id not in pred_coref_dict:
+            pred_coref_dict[m2_id] = []
+        #
+        if (m1_id != m2_id) and (is_coreferred is True):
+            if m2 not in pred_coref_dict[m1_id]:
+                pred_coref_dict[m1_id].append(m2)
+            if m1 not in pred_coref_dict[m2_id]:
+                pred_coref_dict[m2_id].append(m1)
+        del m1, m2, is_coreferred, m1_id, m2_id
+
+    # 2. 计算得分
+    for cur_mp in mp_list:
+        # 抽取
+        s, Cab, l0, li_count = get_mp_score_strategy_3(cur_mp, m_list, pred_coref_dict)
+        # 记录分儿
+        cur_mp.append(s)
+        #
+        del cur_mp, Cab, l0, li_count
+    # 3. 排序
+    sorted_mention_pairs_list = sorted(mp_list, key=lambda x: x[3])
+    # 4. 凝聚
+    clusters = {}
+    """簇。 cluster_id: [mention1, mention2]"""
+    clustered_mention = {}
+    """已经参与聚类的mention。 mention_id: 此mention所属簇的cluster_id"""
+    cluster_id = 0
+    while 1:
+        if len(sorted_mention_pairs_list) == 0:
+            break
+        #
+        cur_mp = sorted_mention_pairs_list.pop()
+        m1 = cur_mp[0]
+        m2 = cur_mp[1]
+        score = cur_mp[3]
         m1_id = f"{m1.doc_id}-{m1.sent_id}-{m1.start_offset}-{m1.end_offset}"
         m2_id = f"{m2.doc_id}-{m2.sent_id}-{m2.start_offset}-{m2.end_offset}"
         #
