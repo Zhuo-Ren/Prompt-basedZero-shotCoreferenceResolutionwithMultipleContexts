@@ -135,7 +135,7 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
         # 读取
         with open(cur_cmp_path, 'rb') as f:
             corpus, mention_pairs = cPickle.load(f)
-        # 聚类（无论wd还是cd聚类，都是每个topic分开做的，因为没有跨topic共指的现象。）
+        # wd聚类（无论wd还是cd聚类，都是每个topic分开做的，因为没有跨topic共指的现象。）
         for cur_topic_id, cur_topic_mp in mention_pairs.items():
             adapter_of_mention_pairs(cur_topic_mp)
             # 计算当前topic的prefix。
@@ -144,7 +144,12 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
             prefix = n * 100000000 + p * 1000000
             """当前topic的prefix。比如36_ecb的prefix就是3600000000,36_ecbplus的prefix就是3601000000"""
             #
-            wd_clustering(prefix=prefix, mention_pairs_list=cur_topic_mp, strategy=strategy, statistic_dict_path=statistic_dict_path, threshold=threshold)
+            wd_clustering(
+                prefix=prefix,
+                mention_pairs_list=cur_topic_mp,
+                strategy=strategy,
+                statistic_dict_path=statistic_dict_path,
+                threshold=threshold)
             #
             del cur_topic_id, cur_topic_mp, n, p, prefix
         remove_unselected_mention(corpus)
@@ -156,6 +161,10 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
         print(f"OUTPUT: corpus and wd clustering result under cur config saved in {path}")
         logging.info(f"OUTPUT: corpus and wd clustering result under cur config saved in {path}")
         # 对聚类结果打分
+        """
+        对wd聚类来说，多一个修改golden cluster id的步骤。
+        因为原本的golden cluster id是跨文档的，这里要给每个golden cluster id加一个前缀以区分不同文档。
+        """
         for cur_topic_id, cur_topic in corpus.topics.items():
             for cur_doc_id, cur_doc in cur_topic.docs.items():
                 for cur_sent_id, cur_sent in cur_doc.sentences.items():
@@ -171,8 +180,8 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
         path = os.path.join(output_path, f"{prefix}.scores")
         with open(path, 'w', encoding="utf8") as f:
             f.writelines([f"{k}: {v}\n" for k, v in scores.items()])
-        print(f"OUTPUT: clustering scores saved in {path}")
-        logging.info(f"OUTPUT: clustering scores saved in {path}")
+        print(f"OUTPUT: wd clustering scores saved in {path}")
+        logging.info(f"OUTPUT: wd clustering scores saved in {path}")
         # 分数整合
         info = {}
         info.update(settings)
@@ -193,7 +202,11 @@ def wd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic
     return experiments_scores
 
 
-def cd_coref(experiment_path_list, config_dict):
+# def cd_clustering(experiment_path_list, output_path, strategy):
+#     ...
+
+
+def cd_coref(experiment_path_list, output_path, strategy, threshold=0, statistic_dict_path="仅strategy2需要此参数"):
     experiments_scores = []
     for cur_experiment_path in experiment_path_list:
         print(f"\n{'='*(19+len(os.path.basename(cur_experiment_path)))}\n"
@@ -209,28 +222,36 @@ def cd_coref(experiment_path_list, config_dict):
         # 读取
         with open(cur_cmp_path, 'rb') as f:
             corpus, mention_pairs = cPickle.load(f)
-        # cd聚类
+        # cd聚类（无论wd还是cd聚类，都是每个topic分开做的，因为没有跨topic共指的现象。）
         for cur_topic_id, cur_topic_mp in mention_pairs.items():
             adapter_of_mention_pairs(cur_topic_mp)
             #
             n = int(re.search("([0-9]*)_ecb", cur_topic_id).groups()[0])
             p = 1 if "plus" in cur_topic_id else 0
             prefix = n*100000000 + p*1000000
+            """当前topic的prefix。比如36_ecb的prefix就是3600000000,36_ecbplus的prefix就是3601000000"""
             #
-            cd_clustering(prefix=prefix, mention_pairs_list=cur_topic_mp)
+            cd_clustering(
+                prefix=prefix,
+                mention_pairs_list=cur_topic_mp,
+                strategy=strategy,
+                statistic_dict_path=statistic_dict_path,
+                threshold=threshold)
+            #
+            del cur_topic_id, cur_topic_mp, n, p, prefix
         remove_unselected_mention(corpus)
         check_whether_all_mentions_are_clustered(corpus)
         # 保存聚类结果
-        path = os.path.join(config_dict['output_path'], f"{os.path.basename(cur_experiment_path)}.cd_clustering.clustered_corpus")
+        path = os.path.join(output_path, f"{os.path.basename(cur_experiment_path)}.cd_clustering.clustered_corpus")
         with open(path, 'wb') as f:
             cPickle.dump(corpus, f)
         print(f"OUTPUT: corpus and cd clustering result under cur config saved in {path}")
         logging.info(f"OUTPUT: corpus and cd clustering result under cur config saved in {path}")
-        # 打分
+        # 对聚类结果打分
         prefix = f"{os.path.basename(cur_experiment_path)}.cd_clustering"
-        scores = coreference_scorer(corpus, config_dict["output_path"], output_prefix=prefix)
+        scores = coreference_scorer(corpus, output_path, output_prefix=prefix)
         # 保存
-        path = os.path.join(config_dict["output_path"], f"{prefix}.scores")
+        path = os.path.join(output_path, f"{prefix}.scores")
         with open(path, 'w', encoding="utf8") as f:
             f.writelines([f"{k}: {v}\n" for k, v in scores.items()])
         print(f"OUTPUT: cd clustering scores saved in {path}")
@@ -247,10 +268,10 @@ def cd_coref(experiment_path_list, config_dict):
                  f"===CD Coref:整合===\n"
                  f"===================")
     save_clustering_scores_into_csv_in_list_format(experiments_scores,
-                                                   output_path=config_dict["output_path"],
+                                                   output_path=output_path,
                                                    suffix="scores_cd_clustering_list.csv")
     save_clustering_scores_into_csv_in_table_format(experiments_scores,
-                                                    output_path=config_dict["output_path"],
+                                                    output_path=output_path,
                                                     suffix="scores_cd_clustering_table.csv")
 
 
@@ -316,14 +337,14 @@ def main(config_dict):
     #
     experiment_path_list = get_cmp_or_csv_files(config_dict["input_path"], with_cmp=False)
 
-    # mp
-    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="2s")
-    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd-")
-    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd+")
-    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd-")
-    # mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
+    # mp------------------------------
+    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="2s")
+    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd-")
+    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="wd+")
+    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd-")
+    mp_target(experiment_path_list=experiment_path_list, config_dict=config_dict, target_type="cd+")
 
-    # get best wd threshold
+    # get best wd threshold---------------
     # wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
     #              strategy=config_dict["clustering_strategy"], threshold=1,
     #              statistic_dict_path=config_dict["statistic_dict_path"])
@@ -362,18 +383,19 @@ def main(config_dict):
     # f.write(f"a_f1: {a_f1_log}\n")
 
 
-    # wd clustering
-    # t_13-25-13 th = 0.0097
-    # t_13-25-25 th = 0.0031999999999999984
-    # t_13 th = 0.0094
-    # t_17 th = 0.0110
-    # t_25 th = 0.0184
-    r = wd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"],
-                 strategy=config_dict["clustering_strategy"], threshold=0,
-                 statistic_dict_path=config_dict["statistic_dict_path"])
-
-    # cd clustering
-    # cd_coref(experiment_path_list=experiment_path_list, config_dict=config_dict)
+    # # wd clustering----------------------------------------
+    # # t_13-25-13 th = 0.0097
+    # # t_13-25-25 th = 0.0031999999999999984
+    # # t_13 th = 0.0094
+    # # t_17 th = 0.0110
+    # # t_25 th = 0.0184
+    # r = wd_coref(experiment_path_list=experiment_path_list,
+    #              output_path=config_dict["output_path"],
+    #              strategy=config_dict["clustering_strategy"], threshold=0,
+    #              statistic_dict_path=config_dict["statistic_dict_path"])
+    #
+    # # cd clustering---------------------------------------------
+    # cd_coref(experiment_path_list=experiment_path_list, output_path=config_dict["output_path"], strategy=config_dict["clustering_strategy"])
 
 
 if __name__ == '__main__':
